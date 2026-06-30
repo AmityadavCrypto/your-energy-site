@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Energy Admin | Assessment Leads</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="admin.js" defer></script>
+</head>
+<body class="admin-page">
+  <header class="admin-header">
+    <div class="container admin-header-shell">
+      <a class="admin-logo" href="index.html" aria-label="Back to Your Energy website">
+        <picture>
+          <source srcset="assets/logo-your-energy-web.webp" type="image/webp">
+          <img src="assets/logo-your-energy-web.png" alt="Your Energy logo">
+        </picture>
+      </a>
+      <a class="button button-secondary" href="index.html">View Website</a>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <section class="container admin-hero">
+      <div>
+        <span class="eyebrow">Admin Panel</span>
+        <h1>Free Solar Assessment Leads</h1>
+        <p>Review customer details captured from the first-page assessment form, including the calculated estimate and quote request status.</p>
+      </div>
+      <div class="admin-note">
+        <strong>Local demo storage</strong>
+        <span>These records are saved in this browser. A live website needs a backend or database to collect leads from every customer device.</span>
+      </div>
+    </section>
+
+    <section class="container admin-stat-grid" aria-label="Lead summary">
+      <article class="admin-stat-card">
+        <span>Total Leads</span>
+        <strong data-stat="total">0</strong>
+      </article>
+      <article class="admin-stat-card">
+        <span>WhatsApp Requests</span>
+        <strong data-stat="quoteRequests">0</strong>
+      </article>
+      <article class="admin-stat-card">
+        <span>Residential</span>
+        <strong data-stat="residential">0</strong>
+      </article>
+      <article class="admin-stat-card">
+        <span>Commercial</span>
+        <strong data-stat="commercial">0</strong>
+      </article>
+    </section>
+
+    <section class="container admin-panel">
+      <div class="admin-toolbar">
+        <div>
+          <h2>Assessment Records</h2>
+          <p data-last-updated>No records saved yet.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="button button-secondary" type="button" data-refresh-leads>Refresh</button>
+          <button class="button button-primary" type="button" data-export-leads>Export CSV</button>
+          <button class="button button-danger" type="button" data-clear-leads>Clear</button>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Type</th>
+              <th>Property</th>
+              <th>Bill</th>
+              <th>City</th>
+              <th>System</th>
+              <th>Savings</th>
+              <th>Investment</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody data-lead-rows></tbody>
+        </table>
+        <div class="empty-state" data-empty-state>
+          <strong>No assessment leads yet</strong>
+          <span>Submit the Free Solar Assessment form on the website, then return here to see the saved entry.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="container lead-detail-panel" data-lead-detail hidden>
+      <div class="lead-detail-head">
+        <div>
+          <span class="eyebrow">Lead Workspace</span>
+          <h2 data-detail-title>Select a lead</h2>
+          <p data-detail-subtitle>Open a lead to manage documents, status, and quotation.</p>
+        </div>
+        <button class="button button-secondary" type="button" data-close-detail>Close</button>
+      </div>
+
+      <div class="lead-detail-grid">
+        <aside class="lead-side-panel">
+          <h3>Customer Details</h3>
+          <dl class="lead-detail-list" data-detail-summary></dl>
+
+          <label class="field">
+            <span>Application Status</span>
+            <select data-application-status>
+              <option value="Application Applied">Application Applied</option>
+              <option value="Payment Received / Loan Passed">Payment Received / Loan Passed</option>
+              <option value="Electricity Board Approval">Electricity Board Approval</option>
+              <option value="Installation At Site Done">Installation At Site Done</option>
+              <option value="Subsidy Received">Subsidy Received</option>
+              <option value="Project Completed">Project Completed</option>
+            </select>
+          </label>
+
+          <div class="status-timeline" data-status-timeline></div>
+        </aside>
+
+        <div class="lead-main-panel">
+          <section class="workspace-card">
+            <div class="workspace-card-head">
+              <div>
+                <h3>Customer Documents</h3>
+                <p>Attach customer images for identity, banking, electricity bill, and other supporting proof.</p>
+              </div>
+            </div>
+
+            <div class="document-grid" data-document-grid></div>
+          </section>
+
+          <section class="workspace-card">
+            <div class="workspace-card-head">
+              <div>
+                <h3>Actual Quotation Builder</h3>
+                <p>Select brands, add system details, calculate the final quotation, and generate a customer-ready PDF card.</p>
+              </div>
+              <div class="quote-actions">
+                <button class="button button-secondary" type="button" data-save-quotation>Save Quote</button>
+                <button class="button button-primary" type="button" data-print-quotation>Download PDF</button>
+                <button class="button button-secondary" type="button" data-whatsapp-quotation>Send on WhatsApp</button>
+              </div>
+            </div>
+
+            <form class="quotation-form" data-quotation-form>
+              <div class="form-section-title field-wide">System Details</div>
+              <label class="field">
+                <span>Solar Panel Brand</span>
+                <select name="solarPanelBrand">
+                  <option>Waaree</option>
+                  <option>Adani Solar</option>
+                  <option>Vikram Solar</option>
+                  <option>Tata Power Solar</option>
+                  <option>RenewSys</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Inverter Brand</span>
+                <select name="inverterBrand">
+                  <option>Growatt</option>
+                  <option>Solis</option>
+                  <option>Sungrow</option>
+                  <option>GoodWe</option>
+                  <option>Luminous</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>System Type</span>
+                <select name="systemType">
+                  <option>On-Grid</option>
+                  <option>Hybrid</option>
+                  <option>Off-Grid</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Panel Technology</span>
+                <select name="panelTechnology">
+                  <option>Mono PERC</option>
+                  <option>TOPCon</option>
+                  <option>Bifacial</option>
+                  <option>Polycrystalline</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>System Size (kW)</span>
+                <input type="number" name="systemSize" min="0" step="0.1" placeholder="5">
+              </label>
+              <label class="field">
+                <span>Panel Wattage</span>
+                <input type="number" name="panelWattage" min="0" step="5" placeholder="550">
+              </label>
+              <label class="field">
+                <span>No. of Panels</span>
+                <input type="number" name="panelQuantity" min="0" step="1" placeholder="10">
+              </label>
+              <label class="field">
+                <span>Inverter Capacity (kW)</span>
+                <input type="number" name="inverterCapacity" min="0" step="0.1" placeholder="5">
+              </label>
+              <label class="field">
+                <span>Mounting Structure</span>
+                <select name="structureType">
+                  <option>GI Structure</option>
+                  <option>Aluminium Structure</option>
+                  <option>Elevated Structure</option>
+                  <option>Custom Structure</option>
+                </select>
+              </label>
+              <div class="form-section-title field-wide">Bill of Materials</div>
+              <label class="field">
+                <span>Energy Meter</span>
+                <input type="text" name="energyMeter" placeholder="HPL / Secure, 1 Phase, as required">
+              </label>
+              <label class="field">
+                <span>DC Cable</span>
+                <input type="text" name="dcCable" placeholder="Polycab, 1C x 4 sq. mm, as required">
+              </label>
+              <label class="field">
+                <span>AC Cable</span>
+                <input type="text" name="acCable" placeholder="Standard copper cable, as required">
+              </label>
+              <label class="field">
+                <span>Earthing Set with LA</span>
+                <input type="text" name="earthingSet" placeholder="Standard set, as required">
+              </label>
+              <label class="field">
+                <span>Earthing Wire</span>
+                <input type="text" name="earthingWire" placeholder="Standard 4 mm, as required">
+              </label>
+              <label class="field">
+                <span>DCDB & ACDB</span>
+                <input type="text" name="dcdbAcdb" placeholder="Standard set, as required">
+              </label>
+              <label class="field">
+                <span>Balance of System</span>
+                <input type="text" name="balanceOfSystem" placeholder="MC4 connectors, lugs, nut bolts and other items">
+              </label>
+              <label class="field">
+                <span>Installation & Commissioning</span>
+                <input type="text" name="installationScope" placeholder="Installation and commissioning as required">
+              </label>
+              <div class="form-section-title field-wide">Commercial Offer</div>
+              <label class="field">
+                <span>Project Cost</span>
+                <input type="number" name="projectCost" min="0" step="1000" placeholder="500000">
+              </label>
+              <label class="field">
+                <span>GST (%)</span>
+                <input type="number" name="gstPercent" min="0" step="0.1" placeholder="13.8">
+              </label>
+              <label class="field">
+                <span>Subsidy / Discount</span>
+                <input type="number" name="discount" min="0" step="1000" placeholder="0">
+              </label>
+              <label class="field">
+                <span>Advance Required</span>
+                <input type="number" name="advanceRequired" min="0" step="1000" placeholder="50000">
+              </label>
+              <label class="field">
+                <span>Quote Validity (days)</span>
+                <input type="number" name="validityDays" min="1" step="1" placeholder="7">
+              </label>
+              <label class="field">
+                <span>Quotation Date</span>
+                <input type="date" name="quotationDate">
+              </label>
+              <label class="field">
+                <span>Prepared By</span>
+                <input type="text" name="preparedBy" placeholder="Tarun Jangir">
+              </label>
+              <label class="field">
+                <span>Payment Terms</span>
+                <input type="text" name="paymentTerms" placeholder="80% advance against work order">
+              </label>
+              <label class="field">
+                <span>Project Completion</span>
+                <input type="text" name="completionTimeline" placeholder="20-30 days from approval and advance">
+              </label>
+              <label class="field">
+                <span>System Warranty</span>
+                <input type="text" name="systemWarranty" placeholder="5 years complete system warranty">
+              </label>
+              <label class="field">
+                <span>Module Warranty</span>
+                <input type="text" name="moduleWarranty" placeholder="25 years performance warranty">
+              </label>
+              <label class="field">
+                <span>Inverter Warranty</span>
+                <input type="text" name="inverterWarranty" placeholder="10 years as per manufacturer norms">
+              </label>
+              <label class="field">
+                <span>Bank Details</span>
+                <input type="text" name="bankDetails" placeholder="A/C No. 7201002100001497, IFSC PUNB0720100">
+              </label>
+              <label class="field field-wide">
+                <span>Remarks</span>
+                <textarea name="remarks" rows="3" placeholder="Scope, subsidy note, warranty, or site-specific terms"></textarea>
+              </label>
+            </form>
+
+            <div class="quotation-preview" data-quotation-preview></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

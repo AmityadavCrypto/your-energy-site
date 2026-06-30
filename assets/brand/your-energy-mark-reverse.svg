@@ -1,0 +1,6 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="markReverseTitle markReverseDesc">
+  <title id="markReverseTitle">Your Energy reverse mark</title>
+  <desc id="markReverseDesc">White power-button style mark with green stem for dark backgrounds.</desc>
+  <circle cx="512" cy="560" r="280" stroke="white" stroke-width="116" stroke-dasharray="1585 175" stroke-dashoffset="88" transform="rotate(-90 512 560)"/>
+  <rect x="454" y="104" width="116" height="394" rx="58" fill="#76C300"/>
+</svg>

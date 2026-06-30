@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Energy | Solar For Homes and Businesses Across India</title>
+  <meta name="description" content="Your Energy by Surya Urja Enterprises helps homes and businesses across India switch to solar with consultation, design, installation, subsidy guidance, and maintenance support.">
+  <meta name="theme-color" content="#08203f">
+  <meta property="og:title" content="Your Energy | Smart Solar Solutions Across India">
+  <meta property="og:description" content="Solar consultation, installation, subsidy guidance, and long-term support for residential and commercial properties.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.yourenergy.in/">
+  <link rel="canonical" href="https://www.yourenergy.in/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header" id="top">
+    <div class="container header-shell">
+      <a class="brand" href="#top" aria-label="Your Energy home">
+        <picture>
+          <source srcset="assets/logo-your-energy-web.webp" type="image/webp">
+          <img src="assets/logo-your-energy-web.png" alt="Your Energy logo">
+        </picture>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-label="Open menu">Menu</button>
+
+      <div class="nav-panel" data-nav-panel>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="#about">About</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#process">Process</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-section">
+      <div class="hero-orb hero-orb-a"></div>
+      <div class="hero-orb hero-orb-b"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <h1>Smart Solar Solutions for Every Roof and Every Business</h1>
+          <p class="hero-lead">Built for Indian homes, commercial spaces, warehouses, factories, and housing societies that want lower energy costs, cleaner power, and a more dependable solar partner.</p>
+
+          <div class="hero-points">
+            <span>Residential + Commercial</span>
+            <span>Subsidy Guidance</span>
+            <span>AMC &amp; Maintenance</span>
+            <span>Pan India Support</span>
+          </div>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#assessment">Start Free Assessment</a>
+            <a class="button button-secondary" href="#process">How It Works</a>
+          </div>
+
+          <div class="hero-strip">
+            <div class="hero-strip-card">
+              <strong>One brand, one clear process</strong>
+              <span>From survey to installation to post-sales support.</span>
+            </div>
+            <div class="hero-strip-card">
+              <strong>Designed for Indian rooftops</strong>
+              <span>Homes, businesses, societies, and industrial properties.</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-form-card" id="assessment">
+          <div class="form-card-head">
+            <span class="eyebrow form-eyebrow">Free Solar Assessment</span>
+            <h2>Tell us about your property</h2>
+            <p>We’ll use this to start your consultation and direct you to the right solar setup.</p>
+          </div>
+
+          <form data-calc-form>
+            <div class="field-grid">
+              <label class="field">
+                <span>Customer Type</span>
+                <select name="customerType" required>
+                  <option value="">Select</option>
+                  <option value="Residential">Residential</option>
+                  <option value="Commercial">Commercial</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Property Type</span>
+                <select name="propertyType" required>
+                  <option value="">Select</option>
+                  <option>Independent Home</option>
+                  <option>Apartment Society</option>
+                  <option>Office Building</option>
+                  <option>Retail Outlet</option>
+                  <option>Warehouse</option>
+                  <option>Factory</option>
+                  <option>Institution</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Monthly Electricity Bill</span>
+                <input type="number" name="monthlyBill" min="1000" step="500" inputmode="numeric" placeholder="2500" required>
+              </label>
+
+              <label class="field">
+                <span>City / State</span>
+                <input type="text" name="city" placeholder="Ahmedabad, Gujarat" autocomplete="address-level2" required>
+              </label>
+
+              <label class="field">
+                <span>Name</span>
+                <input type="text" name="name" placeholder="Your name" autocomplete="name" required>
+              </label>
+
+              <label class="field">
+                <span>Phone</span>
+                <input type="tel" name="phone" inputmode="tel" autocomplete="tel" placeholder="+91" required>
+              </label>
+            </div>
+
+            <button class="button button-primary button-block" type="submit">Calculate My Estimate</button>
+            <p class="form-note">Your estimate appears here instantly. Name and phone are collected so the same details are ready when you request a final quote.</p>
+          </form>
+
+          <div class="calc-result" data-calc-result>
+            <div class="result-grid">
+              <article>
+                <span>Estimated System</span>
+                <strong data-result="system">-</strong>
+              </article>
+              <article>
+                <span>Indicative Roof Area</span>
+                <strong data-result="roof">-</strong>
+              </article>
+              <article>
+                <span>Estimated Monthly Savings</span>
+                <strong data-result="monthly">-</strong>
+              </article>
+              <article>
+                <span>Indicative Investment</span>
+                <strong data-result="investment">-</strong>
+              </article>
+            </div>
+            <p class="result-note" data-result="note">-</p>
+            <button class="button button-secondary button-block" type="button" data-final-quote>Get Final Quote</button>
+          </div>
+        </aside>
+
+        <div class="metric-grid">
+          <article class="metric-card">
+            <strong>Pan-India Positioning</strong>
+            <span>Built to serve residential and commercial buyers across multiple states.</span>
+          </article>
+          <article class="metric-card">
+            <strong>Free Assessment Journey</strong>
+            <span>Lead capture, quick estimate, and consultation flow working together.</span>
+          </article>
+          <article class="metric-card">
+            <strong>Premium Brand Direction</strong>
+            <span>Cleaner visuals, stronger hierarchy, and a more serious solar-first feel.</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-plain">
+      <div class="container">
+        <div class="section-head section-head-wide">
+          <span class="eyebrow">Built For Modern Energy Buyers</span>
+          <h2>One website flow for the real solar decisions people make</h2>
+          <p>Instead of scattered pages and technical clutter, this site is structured to guide buyers from first interest to consultation with speed, clarity, and trust.</p>
+        </div>
+
+        <div class="audience-grid">
+          <article class="audience-card">
+            <span class="card-kicker">Homes</span>
+            <h3>Residential rooftops</h3>
+            <p>For homeowners who want to reduce recurring bills and make better use of their roof space.</p>
+          </article>
+          <article class="audience-card">
+            <span class="card-kicker">Businesses</span>
+            <h3>Commercial properties</h3>
+            <p>For offices, retail units, campuses, and institutions looking for better energy economics.</p>
+          </article>
+          <article class="audience-card">
+            <span class="card-kicker">Industry</span>
+            <h3>Factories &amp; warehouses</h3>
+            <p>For larger roofs and higher loads that need stronger planning, savings, and long-term reliability.</p>
+          </article>
+          <article class="audience-card">
+            <span class="card-kicker">Communities</span>
+            <h3>Societies &amp; shared roofs</h3>
+            <p>For group properties that need coordinated installation, documentation, and maintenance support.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-highlight" id="about">
+      <div class="container split-layout">
+        <div class="content-panel">
+          <span class="eyebrow">About Your Energy</span>
+          <h2>A cleaner customer-facing solar brand backed by Surya Urja Enterprises</h2>
+          <p>Your Energy is positioned as the premium front-end brand for Surya Urja Enterprises. The site is designed to feel less like a generic installer page and more like a confident solar company that helps buyers understand options, savings, process, and long-term support.</p>
+          <ul class="check-list">
+            <li>One consultation path for both residential and commercial leads</li>
+            <li>Guidance on subsidy, system choice, and maintenance planning</li>
+            <li>Clean proposals built around your bill, property type, and energy goal</li>
+            <li>Support that continues after the installation is complete</li>
+          </ul>
+        </div>
+
+        <div class="benefit-stack">
+          <article class="benefit-card">
+            <strong>Solar that starts with your bill</strong>
+            <p>We begin with actual usage and property reality, not generic package selling.</p>
+          </article>
+          <article class="benefit-card">
+            <strong>Pan-India consultation approach</strong>
+            <p>A national-facing brand with service logic built for multiple states and property formats.</p>
+          </article>
+          <article class="benefit-card">
+            <strong>Support beyond handover</strong>
+            <p>AMC, maintenance, and ongoing guidance are treated as part of the promise.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="solutions">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Solutions</span>
+          <h2>Built around the solar systems people actually compare</h2>
+          <p>We cover the full decision set, from savings-first on-grid systems to backup-ready hybrid setups and long-term maintenance support.</p>
+        </div>
+
+        <div class="solution-grid">
+          <article class="solution-card">
+            <h3>On-Grid Solar</h3>
+            <p>Best for bill reduction where utility connectivity is stable and savings are the main priority.</p>
+          </article>
+          <article class="solution-card">
+            <h3>Off-Grid Solar</h3>
+            <p>For sites where energy independence and power continuity matter more than grid reliance.</p>
+          </article>
+          <article class="solution-card">
+            <h3>Hybrid Solar</h3>
+            <p>For customers who want both savings and a cleaner path toward backup capability.</p>
+          </article>
+          <article class="solution-card">
+            <h3>Battery Backup</h3>
+            <p>For critical loads, smoother downtime handling, and stronger energy resilience.</p>
+          </article>
+          <article class="solution-card">
+            <h3>Subsidy Assistance</h3>
+            <p>For residential buyers who need the paperwork process explained clearly and honestly.</p>
+          </article>
+          <article class="solution-card">
+            <h3>AMC &amp; Maintenance</h3>
+            <p>For keeping systems healthy after installation with support that feels dependable.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="process">
+      <div class="container">
+        <div class="section-head section-head-light">
+          <span class="eyebrow eyebrow-dark">How It Works</span>
+          <h2>A cleaner path from first inquiry to live solar system</h2>
+          <p>The process is intentionally simple, so buyers always know what happens next.</p>
+        </div>
+
+        <div class="process-grid">
+          <article class="process-card">
+            <span class="step-tag">01</span>
+            <h3>Discovery Call</h3>
+            <p>We understand your bill, property type, usage pattern, and what you want solar to solve.</p>
+          </article>
+          <article class="process-card">
+            <span class="step-tag">02</span>
+            <h3>Site Assessment</h3>
+            <p>We review roof conditions, space, direction, access, shadow factors, and practical constraints.</p>
+          </article>
+          <article class="process-card">
+            <span class="step-tag">03</span>
+            <h3>Custom Design &amp; Quote</h3>
+            <p>You get a solar recommendation, estimate, and solution path matched to your needs.</p>
+          </article>
+          <article class="process-card">
+            <span class="step-tag">04</span>
+            <h3>Installation &amp; Support</h3>
+            <p>Execution, activation, subsidy-related guidance, and post-installation care under one journey.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white">
+      <div class="container split-layout split-layout-reverse">
+        <div class="content-panel">
+          <span class="eyebrow">After Installation</span>
+          <h2>Subsidy support, maintenance planning, and long-term system confidence</h2>
+          <p>The website should not stop at “we install solar.” It should also reassure visitors that the team can support documentation, explain the right process, and help them keep the system healthy over time.</p>
+        </div>
+
+        <div class="support-grid">
+          <article class="support-card">
+            <h3>Subsidy Guidance</h3>
+            <p>Explain current subsidy-related process expectations in simple language without overpromising.</p>
+          </article>
+          <article class="support-card">
+            <h3>AMC &amp; Upkeep</h3>
+            <p>Make after-sales care feel like part of the offer, not something hidden after the sale.</p>
+          </article>
+          <article class="support-card">
+            <h3>Monitoring Mindset</h3>
+            <p>Help customers think about system performance, cleaning cadence, and maintenance response.</p>
+          </article>
+          <article class="support-card">
+            <h3>Finance As A Secondary Lever</h3>
+            <p>Support buyers who need funding clarity, while keeping the main story focused on fit and savings.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-white" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Frequently Asked Questions</span>
+          <h2>Clear answers to the questions that slow down solar decisions</h2>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary>Is this website only for homes, or also for businesses?</summary>
+            <p>Your Energy is built for both. The free assessment flow handles residential and commercial leads through one cleaner experience.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I get a rough estimate before a site visit?</summary>
+            <p>Yes. The free assessment provides a directional estimate based on your bill, property type, and location. A full quote becomes more accurate after an assessment.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you support on-grid, off-grid, and hybrid solar?</summary>
+            <p>Yes. The website is designed to explain each solution path clearly so the recommendation can match the property’s real needs.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What happens after the installation is complete?</summary>
+            <p>Your Energy also positions maintenance, AMC support, and long-term system care as part of the customer journey.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you help with subsidy-related guidance?</summary>
+            <p>Yes. The team can help explain the process and what is usually required, while final rules and approval depend on the current applicable guidelines.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark contact-section" id="contact">
+      <div class="container contact-info-layout">
+        <div class="section-head section-head-light">
+          <span class="eyebrow eyebrow-dark">Contact</span>
+          <h2>Reach Surya Urja Enterprises directly</h2>
+          <p>For solar consultation, installation planning, subsidy guidance, or maintenance support, connect with the team in Sikar.</p>
+        </div>
+
+        <div class="contact-info-grid">
+          <article class="contact-info-card">
+            <span>Call / WhatsApp</span>
+            <div>
+              <a href="tel:+919001948181">+91 90019 48181</a>
+              <a class="contact-sub-link" href="https://wa.me/919001948181?text=Hello%20Your%20Energy%2C%20I%20want%20to%20discuss%20a%20solar%20project." target="_blank" rel="noreferrer">Message on WhatsApp</a>
+            </div>
+          </article>
+          <article class="contact-info-card">
+            <span>Company</span>
+            <strong>Surya Urja Enterprises</strong>
+          </article>
+          <article class="contact-info-card contact-info-card-wide">
+            <span>Address</span>
+            <strong>Near Sanwali Circle, Sikar, Rajasthan - 332001</strong>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-shell">
+      <div class="footer-brand">
+        <picture>
+          <source srcset="assets/logo-your-energy-footer-reverse.webp" type="image/webp">
+          <img src="assets/logo-your-energy-footer-reverse.png" alt="Your Energy logo">
+        </picture>
+        <p>Your Energy is the customer-facing solar brand of Surya Urja Enterprises, built for homes and businesses across India.</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#process">Process</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <div class="footer-meta">
+        <span>Company Name: Surya Urja Enterprises</span>
+        <span>Near Sanwali Circle, Sikar, Rajasthan - 332001</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="mobile-cta">
+    <a href="https://wa.me/919001948181?text=Hello%20Your%20Energy%2C%20I%20want%20to%20discuss%20a%20solar%20project." target="_blank" rel="noreferrer">WhatsApp</a>
+    <a href="#assessment">Free Assessment</a>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

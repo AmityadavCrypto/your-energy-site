@@ -1,0 +1,53 @@
+ObjC.import("AppKit");
+ObjC.import("Foundation");
+
+function writePngFromImage(image, outputPath) {
+  const rep = $.NSBitmapImageRep.imageRepWithData(image.TIFFRepresentation);
+  const data = rep.representationUsingTypeProperties($.NSBitmapImageFileTypePNG, $({}));
+  data.writeToFileAtomically($(outputPath), true);
+}
+
+function loadImage(path) {
+  const image = $.NSImage.alloc.initWithContentsOfFile($(path));
+  if (!image || !image.isValid) {
+    throw new Error(`Could not load image at ${path}`);
+  }
+  return image;
+}
+
+function exportSvgPng(inputPath, outputPath) {
+  const image = loadImage(inputPath);
+  writePngFromImage(image, outputPath);
+}
+
+function copyFile(sourcePath, destinationPath) {
+  const manager = $.NSFileManager.defaultManager;
+  if (manager.fileExistsAtPath($(destinationPath))) {
+    manager.removeItemAtPathError($(destinationPath), null);
+  }
+  manager.copyItemAtPathToPathError($(sourcePath), $(destinationPath), null);
+}
+
+function main() {
+  const root = "/Users/amityadav/Documents/Your energy/assets";
+  const brand = `${root}/brand`;
+  const reference = `${brand}/your-energy-logo-reference.png`;
+
+  copyFile(reference, `${root}/logo-your-energy.png`);
+  copyFile(reference, `${brand}/your-energy-logo-primary.png`);
+
+  const outputs = [
+    [`${brand}/your-energy-logo-reverse.svg`, `${brand}/your-energy-logo-reverse.png`],
+    [`${brand}/your-energy-logo-monochrome.svg`, `${brand}/your-energy-logo-monochrome.png`],
+    [`${root}/your-energy-mark.svg`, `${root}/your-energy-mark.png`],
+    [`${root}/your-energy-mark.svg`, `${brand}/your-energy-mark-primary.png`],
+    [`${brand}/your-energy-mark-reverse.svg`, `${brand}/your-energy-mark-reverse.png`],
+    [`${root}/favicon.svg`, `${brand}/favicon-master.png`],
+  ];
+
+  outputs.forEach(([input, output]) => exportSvgPng(input, output));
+
+  console.log("exported");
+}
+
+main();
