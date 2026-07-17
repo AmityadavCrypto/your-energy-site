@@ -99,7 +99,6 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
       <span>System Size</span><strong>${escapeHtml(quote.systemSize || "-")} kW</strong>
       <span>System Type</span><strong>${escapeHtml(quote.systemType)}</strong>
       <span>GST Mode</span><strong>${escapeHtml(totals.gstMode)}</strong>
-      <span>GST Amount</span><strong>${formatCurrency(totals.gst)}</strong>
       <span>Subsidy / Discount</span><strong>${formatCurrency(totals.discount)}</strong>
       <span>Balance</span><strong>${formatCurrency(totals.balance)}</strong>
     </div>
@@ -128,7 +127,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
 
   const bomRows = [
     ["1", "Solar Module", quote.solarPanelBrand || "-", panelCapacity, panelQuantity],
-    ["2", "Hybrid Inverter", quote.inverterBrand || "-", `${inverterCapacity}, ${quote.systemType || "-"}`, "1 Pc."],
+    ["2", "Inverter", quote.inverterBrand || "-", `${inverterCapacity}, ${quote.systemType || "-"}`, "1 Pc."],
     ["3", "Energy Meter", quote.energyMeter || "HPL / Secure or equivalent", "As per DISCOM requirement", "As required"],
     ["4", "DC Cable", quote.dcCable || "Polycab / equivalent", "1C x 4 sq. mm", "As required"],
     ["5", "AC Cable", quote.acCable || "Standard copper cable", "As per load requirement", "As required"],
@@ -143,10 +142,9 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const commercialRows = [
     ["1", "Project Cost", formatCurrency(totals.subtotal)],
     ["2", "GST Type", totals.gstMode],
-    ["3", "GST Amount", formatCurrency(totals.gst)],
-    ["4", "Subsidy / Discount", formatCurrency(totals.discount)],
-    ["5", "Final Quotation", formatCurrency(totals.total)],
-    ["6", "DISCOM / Net Metering Charges", "Government / DISCOM charges are extra unless specifically included in writing."],
+    ["3", "Subsidy / Discount", formatCurrency(totals.discount)],
+    ["4", "Final Quotation", formatCurrency(totals.total)],
+    ["5", "DISCOM / Net Metering Charges", "Government / DISCOM charges are extra unless specifically included in writing."],
   ];
 
   const termRows = [
@@ -349,20 +347,25 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       min-height: 166px;
       padding: 16px;
       border-radius: 18px;
-      background: #08203f;
-      color: rgba(238, 245, 255, 0.78);
+      background: linear-gradient(145deg, #eef5ff 0%, #f9fcff 45%, #eef8df 100%);
+      color: #526982;
       text-align: right;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      border: 1px solid #d5e4d6;
+      box-shadow: 0 14px 34px rgba(8, 32, 63, 0.08);
     }
     .quotation-title-block img {
-      width: 42px;
-      height: 42px;
+      width: 50px;
+      height: 50px;
       object-fit: contain;
       justify-self: end;
+      padding: 6px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 18px rgba(8, 32, 63, 0.08);
     }
     .quotation-title-block span {
       display: block;
-      color: #bde86d;
+      color: #5ea900;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
@@ -371,7 +374,7 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     .quotation-title-block strong {
       display: block;
       margin: 8px 0;
-      color: #ffffff;
+      color: #08203f;
       font-size: 27px;
       line-height: 1.05;
     }
