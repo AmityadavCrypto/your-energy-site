@@ -114,7 +114,6 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
   const quotationDate = formatQuotationDate(quote.quotationDate);
   const logoUrl = getAssetUrl("assets/logo-your-energy-web.png");
-  const markUrl = getAssetUrl("assets/your-energy-mark.png");
 
   const customerRows = [
     ["Customer Name", lead.name || "-"],
@@ -185,7 +184,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           </div>
         </div>
         <div class="quotation-title-block">
-          <img src="${markUrl}" alt="" aria-hidden="true">
+          <img src="${logoUrl}" alt="Your Energy">
           <span>Final Quotation</span>
           <strong>${formatCurrency(totals.total)}</strong>
           <p>Date: ${escapeHtml(quotationDate)}</p>
@@ -353,14 +352,14 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       box-shadow: 0 14px 34px rgba(8, 32, 63, 0.08);
     }
     .quotation-title-block img {
-      width: 50px;
-      height: 50px;
+      width: 132px;
+      height: auto;
       object-fit: contain;
       justify-self: end;
-      padding: 6px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 18px rgba(8, 32, 63, 0.08);
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
     .quotation-title-block span {
       display: block;
