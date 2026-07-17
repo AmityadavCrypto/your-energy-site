@@ -53,7 +53,6 @@ async function supabaseRequest(path, options = {}) {
     ...options,
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
       "Content-Type": "application/json",
       Prefer: "return=representation",
       ...(options.headers || {}),
@@ -61,10 +60,18 @@ async function supabaseRequest(path, options = {}) {
   });
 
   const text = await result.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+  }
 
   if (!result.ok) {
-    throw new Error(data?.message || data?.hint || "Supabase request failed.");
+    throw new Error(data?.message || data?.hint || data?.raw || "Supabase request failed.");
   }
 
   return data;
@@ -82,12 +89,23 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || "{}");
     const row = mapLeadToRow(body.lead || body);
+    console.log("[lead-upsert] received", {
+      clientLeadId: row.client_lead_id,
+      status: row.status,
+    });
+
     const existing = await supabaseRequest(
       `/leads?client_lead_id=eq.${encodeURIComponent(row.client_lead_id)}&select=id,created_at,application_status,documents,quotation&limit=1`,
       { method: "GET" },
     );
+    const isUpdate = Boolean(existing?.length);
 
-    const savedRows = existing?.length
+    console.log("[lead-upsert] lookup complete", {
+      clientLeadId: row.client_lead_id,
+      action: isUpdate ? "update" : "insert",
+    });
+
+    const savedRows = isUpdate
       ? await supabaseRequest(`/leads?id=eq.${existing[0].id}`, {
           method: "PATCH",
           body: JSON.stringify(row),
@@ -103,12 +121,23 @@ exports.handler = async (event) => {
         });
 
     const saved = savedRows?.[0];
+    console.log("[lead-upsert] saved", {
+      id: saved?.id || null,
+      clientLeadId: saved?.client_lead_id || row.client_lead_id,
+      action: isUpdate ? "updated" : "inserted",
+    });
+
     return response(200, {
       ok: true,
       id: saved?.id,
       clientLeadId: saved?.client_lead_id || row.client_lead_id,
     });
   } catch (error) {
+    console.error("[lead-upsert] failed", {
+      message: error.message || "Could not save lead.",
+      stack: error.stack || null,
+    });
+
     return response(500, {
       ok: false,
       error: error.message || "Could not save lead.",
