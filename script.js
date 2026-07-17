@@ -1,29 +1,62 @@
 const WHATSAPP_NUMBER = "919261869245";
 const LEAD_STORAGE_KEY = "yourEnergyAssessmentLeads";
 
-function syncLeadToBackend(lead) {
-  return fetch("/.netlify/functions/lead-upsert", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      lead: {
-        ...lead,
-        clientLeadId: lead.id,
+async function syncLeadToBackend(lead) {
+  try {
+    const response = await fetch("/.netlify/functions/lead-upsert", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    }),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Lead backend did not accept the request.");
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      console.warn("Lead saved locally, but backend sync failed:", error);
-      return null;
+      body: JSON.stringify({
+        lead: {
+          ...lead,
+          clientLeadId: lead.id,
+        },
+      }),
     });
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || !payload.ok) {
+      throw new Error(payload.error || "Lead backend did not accept the request.");
+    }
+
+    return {
+      ok: true,
+      id: payload.id || lead.id,
+      clientLeadId: payload.clientLeadId || lead.id,
+    };
+  } catch (error) {
+    console.warn("Lead saved locally, but backend sync failed:", error);
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Lead backend did not accept the request.",
+    };
+  }
+}
+
+function setSyncStatus(element, message, state) {
+  if (!element) return;
+
+  element.hidden = !message;
+  element.textContent = message || "";
+
+  if (message && state) {
+    element.dataset.state = state;
+  } else {
+    delete element.dataset.state;
+  }
+}
+
+function setButtonLoading(button, isLoading, loadingLabel) {
+  if (!button) return;
+
+  if (!button.dataset.defaultLabel) {
+    button.dataset.defaultLabel = button.textContent.trim();
+  }
+
+  button.disabled = isLoading;
+  button.textContent = isLoading ? loadingLabel : button.dataset.defaultLabel;
 }
 
 function setupMobileMenu() {
@@ -86,7 +119,7 @@ function createLeadId() {
   return `lead-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function saveAssessmentLead(formData, estimate, status, leadId) {
+async function saveAssessmentLead(formData, estimate, status, leadId) {
   const leads = readAssessmentLeads();
   const now = new Date().toISOString();
   const id = leadId || createLeadId();
@@ -126,8 +159,11 @@ function saveAssessmentLead(formData, estimate, status, leadId) {
   }
 
   writeAssessmentLeads(leads);
-  syncLeadToBackend(existingIndex >= 0 ? leads[existingIndex] : lead);
-  return id;
+
+  return {
+    leadId: id,
+    syncResult: await syncLeadToBackend(existingIndex >= 0 ? leads[existingIndex] : lead),
+  };
 }
 
 function formatCurrency(value) {
@@ -185,35 +221,76 @@ function setupAssessmentFlow() {
     const container = form.closest(".hero-form-card");
     const result = container ? container.querySelector("[data-calc-result]") : null;
     const finalQuote = container ? container.querySelector("[data-final-quote]") : null;
+    const syncStatus = container ? container.querySelector("[data-sync-status]") : null;
+    const submitButton = form.querySelector('button[type="submit"]');
     let latestEstimate = null;
     let latestFormData = null;
     let latestLeadId = null;
 
     if (!result) return;
 
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const { formData, estimate } = getEstimateFromForm(form);
       latestEstimate = estimate;
       latestFormData = formData;
-      latestLeadId = saveAssessmentLead(formData, estimate, "Estimate Viewed", latestLeadId);
       updateEstimateResult(result, estimate);
+      setButtonLoading(submitButton, true, "Saving Estimate...");
+      setSyncStatus(syncStatus, "Saving your estimate details...", "pending");
+
+      const { leadId, syncResult } = await saveAssessmentLead(formData, estimate, "Estimate Viewed", latestLeadId);
+      latestLeadId = leadId;
+      setButtonLoading(submitButton, false);
+
+      if (syncResult.ok) {
+        setSyncStatus(syncStatus, "Estimate ready. Your details are saved for the final quote step.", "success");
+      } else {
+        setSyncStatus(
+          syncStatus,
+          "Estimate ready. We saved your details in this browser, but live dashboard sync needs attention.",
+          "warning",
+        );
+      }
     });
 
     if (finalQuote) {
-      finalQuote.addEventListener("click", () => {
+      finalQuote.addEventListener("click", async () => {
         if (!form.reportValidity()) return;
 
         const { formData, estimate } = getEstimateFromForm(form);
         latestEstimate = estimate;
         latestFormData = formData;
-        latestLeadId = saveAssessmentLead(formData, estimate, "WhatsApp Quote Requested", latestLeadId);
         updateEstimateResult(result, estimate);
+        setButtonLoading(finalQuote, true, "Saving and Opening WhatsApp...");
+        setSyncStatus(syncStatus, "Saving your quote request before opening WhatsApp...", "pending");
+
+        const { leadId, syncResult } = await saveAssessmentLead(
+          formData,
+          estimate,
+          "WhatsApp Quote Requested",
+          latestLeadId,
+        );
+        latestLeadId = leadId;
 
         const text = encodeURIComponent(
           buildEstimateWhatsappMessage(latestFormData, latestEstimate, "Free Solar Assessment"),
         );
-        window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+
+        if (syncResult.ok) {
+          setSyncStatus(syncStatus, "Quote request saved. Opening WhatsApp now...", "success");
+        } else {
+          setSyncStatus(
+            syncStatus,
+            "Opening WhatsApp now. Your request was saved in this browser, but the live dashboard sync needs checking.",
+            "warning",
+          );
+        }
+
+        window.setTimeout(() => {
+          setButtonLoading(finalQuote, false);
+          window.location.href = whatsappUrl;
+        }, 1100);
       });
     }
   });
