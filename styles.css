@@ -887,6 +887,10 @@ button {
     linear-gradient(180deg, #f8faf6 0%, #eef4eb 100%);
 }
 
+.admin-page [hidden] {
+  display: none !important;
+}
+
 .admin-header {
   padding: 1rem 0;
 }
@@ -907,6 +911,12 @@ button {
 .admin-logo img {
   height: 52px;
   width: auto;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
 }
 
 .admin-shell {
@@ -958,6 +968,54 @@ button {
   font-family: "Sora", "Avenir Next", sans-serif;
   font-size: 1.15rem;
   letter-spacing: 0;
+}
+
+.admin-login-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(300px, 1.15fr);
+  gap: 1.2rem;
+  align-items: center;
+  padding: 1.25rem;
+  border-radius: 28px;
+  background: #071223;
+  color: rgba(238, 245, 255, 0.82);
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-login-panel h2 {
+  margin: 0.8rem 0 0;
+  color: white;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  line-height: 1.05;
+}
+
+.admin-login-panel p {
+  margin: 0.8rem 0 0;
+  line-height: 1.7;
+}
+
+.admin-login-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.8rem;
+  align-items: end;
+  padding: 1rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-login-form .field span {
+  color: rgba(238, 245, 255, 0.86);
+}
+
+.admin-login-status {
+  grid-column: 1 / -1;
+  min-height: 1.4em;
+  margin: 0;
+  color: #bde86d;
+  font-weight: 800;
 }
 
 .admin-stat-grid {
@@ -1389,6 +1447,8 @@ button {
   .split-layout-reverse,
   .contact-info-layout,
   .admin-hero,
+  .admin-login-panel,
+  .admin-login-form,
   .lead-detail-grid,
   .footer-shell {
     grid-template-columns: 1fr;
@@ -1460,6 +1520,7 @@ button {
   }
 
   .admin-header-shell,
+  .admin-header-actions,
   .admin-toolbar,
   .lead-detail-head,
   .workspace-card-head {
@@ -1476,6 +1537,7 @@ button {
   }
 
   .admin-actions,
+  .admin-header-actions,
   .quote-actions,
   .admin-actions .button,
   .quote-actions .button,

@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 4173",
-    "check": "node --check script.js && node --check admin.js"
+    "check": "node --check script.js && node --check admin.js && node --check netlify/functions/lead-upsert.js"
   }
 }

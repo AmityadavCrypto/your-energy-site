@@ -1,5 +1,30 @@
-const WHATSAPP_NUMBER = "919001948181";
+const WHATSAPP_NUMBER = "919261869245";
 const LEAD_STORAGE_KEY = "yourEnergyAssessmentLeads";
+
+function syncLeadToBackend(lead) {
+  return fetch("/.netlify/functions/lead-upsert", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      lead: {
+        ...lead,
+        clientLeadId: lead.id,
+      },
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Lead backend did not accept the request.");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.warn("Lead saved locally, but backend sync failed:", error);
+      return null;
+    });
+}
 
 function setupMobileMenu() {
   const toggle = document.querySelector(".menu-toggle");
@@ -101,6 +126,7 @@ function saveAssessmentLead(formData, estimate, status, leadId) {
   }
 
   writeAssessmentLeads(leads);
+  syncLeadToBackend(existingIndex >= 0 ? leads[existingIndex] : lead);
   return id;
 }
 

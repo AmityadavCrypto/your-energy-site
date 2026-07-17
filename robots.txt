@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://www.yourenergy.in/sitemap.xml
+Sitemap: https://www.yourenergy.co.in/sitemap.xml

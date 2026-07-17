@@ -36,9 +36,102 @@ const CSV_COLUMNS = [
   ["note", "Estimate Note"],
 ];
 
+const DOCUMENT_BUCKET = "lead-documents";
+const SUPABASE_PLACEHOLDER = "YOUR_PROJECT_ID";
+
 let selectedLeadId = null;
+let supabaseClient = null;
+let isRemoteMode = false;
+let isAdminSignedIn = false;
+let leadCache = [];
+
+function getSupabaseConfig() {
+  const config = window.YourEnergySupabaseConfig || {};
+  return {
+    url: String(config.url || "").trim(),
+    anonKey: String(config.anonKey || "").trim(),
+  };
+}
+
+function hasSupabaseConfig() {
+  const { url, anonKey } = getSupabaseConfig();
+  return Boolean(url && anonKey && !url.includes(SUPABASE_PLACEHOLDER));
+}
+
+function setAdminStorageNote(title, message) {
+  setText("[data-admin-storage-title]", title);
+  setText("[data-admin-storage-message]", message);
+}
+
+function setAdminAppVisibility(isVisible) {
+  document.querySelectorAll("[data-admin-app]").forEach((element) => {
+    element.hidden = !isVisible;
+  });
+}
+
+function setLoginVisibility(isVisible) {
+  const loginPanel = document.querySelector("[data-admin-login]");
+  if (loginPanel) loginPanel.hidden = !isVisible;
+}
+
+function setLoginStatus(message) {
+  setText("[data-admin-login-status]", message || "");
+}
+
+function setSignOutVisibility(isVisible) {
+  const button = document.querySelector("[data-admin-sign-out]");
+  if (button) button.hidden = !isVisible;
+}
+
+function dbRowToLead(row) {
+  return normalizeLead({
+    id: row.id,
+    clientLeadId: row.client_lead_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    status: row.status,
+    applicationStatus: row.application_status,
+    customerType: row.customer_type,
+    propertyType: row.property_type,
+    monthlyBill: row.monthly_bill,
+    city: row.city,
+    name: row.name,
+    phone: row.phone,
+    estimatedSystem: row.estimated_system,
+    roofArea: row.roof_area,
+    monthlySavings: row.monthly_savings,
+    investment: row.investment,
+    note: row.note,
+    documents: row.documents || {},
+    quotation: row.quotation || {},
+  });
+}
+
+function leadToDbPatch(lead) {
+  return {
+    status: lead.status || "Estimate Viewed",
+    application_status: lead.applicationStatus || "Application Applied",
+    customer_type: lead.customerType || "",
+    property_type: lead.propertyType || "",
+    monthly_bill: lead.monthlyBill || "",
+    city: lead.city || "",
+    name: lead.name || "",
+    phone: lead.phone || "",
+    estimated_system: lead.estimatedSystem || "",
+    roof_area: lead.roofArea || "",
+    monthly_savings: lead.monthlySavings || "",
+    investment: lead.investment || "",
+    note: lead.note || "",
+    documents: lead.documents || {},
+    quotation: lead.quotation || {},
+  };
+}
 
 function readLeads() {
+  if (isRemoteMode) {
+    return leadCache.map(normalizeLead);
+  }
+
   try {
     const leads = JSON.parse(localStorage.getItem(LEAD_STORAGE_KEY) || "[]");
     return Array.isArray(leads) ? leads.map(normalizeLead) : [];
@@ -48,6 +141,11 @@ function readLeads() {
 }
 
 function writeLeads(leads) {
+  if (isRemoteMode) {
+    leadCache = leads.map(normalizeLead);
+    return;
+  }
+
   localStorage.setItem(LEAD_STORAGE_KEY, JSON.stringify(leads));
 }
 
@@ -70,7 +168,24 @@ function normalizeLead(lead) {
   };
 }
 
-function updateLead(leadId, updater) {
+async function fetchRemoteLeads() {
+  if (!supabaseClient || !isAdminSignedIn) return [];
+
+  const { data, error } = await supabaseClient
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    window.alert(`Could not load leads from Supabase: ${error.message}`);
+    return readLeads();
+  }
+
+  leadCache = (data || []).map(dbRowToLead);
+  return leadCache;
+}
+
+async function updateLead(leadId, updater) {
   const leads = readLeads();
   const index = leads.findIndex((lead) => lead.id === leadId);
   if (index < 0) return null;
@@ -78,6 +193,24 @@ function updateLead(leadId, updater) {
   const updatedLead = normalizeLead(updater({ ...leads[index] }));
   updatedLead.updatedAt = new Date().toISOString();
   leads[index] = updatedLead;
+
+  if (isRemoteMode) {
+    const { data, error } = await supabaseClient
+      .from("leads")
+      .update(leadToDbPatch(updatedLead))
+      .eq("id", leadId)
+      .select()
+      .single();
+
+    if (error) {
+      window.alert(`Could not save this lead to Supabase: ${error.message}`);
+      return null;
+    }
+
+    const savedLead = dbRowToLead(data);
+    leadCache[index] = savedLead;
+    return savedLead;
+  }
 
   return tryWriteLeads(leads) ? updatedLead : null;
 }
@@ -239,12 +372,19 @@ function renderDocumentGrid(lead) {
 
   grid.innerHTML = DOCUMENT_TYPES.map(([key, label]) => {
     const documentItem = lead.documents[key];
+    const hasRemotePath = Boolean(documentItem?.path && !documentItem?.dataUrl);
     const preview = documentItem
-      ? `<img src="${documentItem.dataUrl}" alt="${escapeHtml(label)} preview">`
+      ? hasRemotePath
+        ? `<div class="document-placeholder">Stored securely</div>`
+        : `<img src="${documentItem.dataUrl}" alt="${escapeHtml(label)} preview">`
       : `<div class="document-placeholder">No image added</div>`;
     const actions = documentItem
       ? `
-        <a class="mini-action" href="${documentItem.dataUrl}" download="${escapeHtml(documentItem.name)}">Download</a>
+        ${
+          hasRemotePath
+            ? `<button class="mini-action" type="button" data-download-document="${key}">Download</button>`
+            : `<a class="mini-action" href="${documentItem.dataUrl}" download="${escapeHtml(documentItem.name)}">Download</a>`
+        }
         <button class="mini-action mini-action-danger" type="button" data-remove-document="${key}">Remove</button>
       `
       : "";
@@ -275,20 +415,62 @@ function fileToDataUrl(file) {
   });
 }
 
+function safeFileName(name) {
+  return String(name || "document")
+    .toLowerCase()
+    .replace(/[^a-z0-9.-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+async function uploadRemoteDocument(lead, key, file) {
+  const path = `${lead.id}/${key}-${Date.now()}-${safeFileName(file.name)}`;
+  const { error: uploadError } = await supabaseClient.storage.from(DOCUMENT_BUCKET).upload(path, file, {
+    contentType: file.type || "application/octet-stream",
+    upsert: true,
+  });
+
+  if (uploadError) {
+    window.alert(`Could not upload document: ${uploadError.message}`);
+    return null;
+  }
+
+  return updateLead(lead.id, (draft) => ({
+    ...draft,
+    documents: {
+      ...draft.documents,
+      [key]: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        bucket: DOCUMENT_BUCKET,
+        path,
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  }));
+}
+
 async function handleDocumentUpload(input) {
   const lead = getSelectedLead();
   const file = input.files && input.files[0];
   const key = input.dataset.documentInput;
   if (!lead || !file || !key) return;
 
-  if (file.size > MAX_DOCUMENT_SIZE) {
+  if (!isRemoteMode && file.size > MAX_DOCUMENT_SIZE) {
     window.alert("Please upload an image below 1.5 MB for this local admin version.");
     input.value = "";
     return;
   }
 
+  if (isRemoteMode) {
+    const updatedLead = await uploadRemoteDocument(lead, key, file);
+    input.value = "";
+    if (updatedLead) renderLeads();
+    return;
+  }
+
   const dataUrl = await fileToDataUrl(file);
-  const updatedLead = updateLead(lead.id, (draft) => ({
+  const updatedLead = await updateLead(lead.id, (draft) => ({
     ...draft,
     documents: {
       ...draft.documents,
@@ -305,11 +487,35 @@ async function handleDocumentUpload(input) {
   if (updatedLead) renderLeads();
 }
 
-function removeDocument(key) {
+async function downloadRemoteDocument(key) {
+  const lead = getSelectedLead();
+  const documentItem = lead?.documents?.[key];
+  if (!documentItem) return;
+
+  if (documentItem.dataUrl) {
+    window.open(documentItem.dataUrl, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  const { data, error } = await supabaseClient.storage.from(DOCUMENT_BUCKET).createSignedUrl(documentItem.path, 60 * 10);
+  if (error) {
+    window.alert(`Could not open document: ${error.message}`);
+    return;
+  }
+
+  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+}
+
+async function removeDocument(key) {
   const lead = getSelectedLead();
   if (!lead || !key) return;
+  const documentItem = lead.documents[key];
 
-  const updatedLead = updateLead(lead.id, (draft) => {
+  if (isRemoteMode && documentItem?.path) {
+    await supabaseClient.storage.from(DOCUMENT_BUCKET).remove([documentItem.path]);
+  }
+
+  const updatedLead = await updateLead(lead.id, (draft) => {
     const documents = { ...draft.documents };
     delete documents[key];
     return { ...draft, documents };
@@ -352,7 +558,7 @@ function getQuotationDefaults(lead) {
     systemWarranty: "5 years complete system warranty",
     moduleWarranty: "25 years solar module performance warranty",
     inverterWarranty: "10 years inverter warranty as per manufacturer norms",
-    bankDetails: "A/C Name: Surya Urja Enterprises, A/C No.: 7201002100001497, IFSC: PUNB0720100",
+    bankDetails: "A/C Name: FLYINGAPES TECHNOLOGIES PRIVATE LIMITED, A/C No.: 7201002100001497, IFSC: PUNB0720100",
     remarks: "Final pricing may change after site verification, shadow analysis, and approval requirements.",
   };
 }
@@ -430,13 +636,13 @@ function renderQuotationPreview(lead) {
   `;
 }
 
-function saveQuotation() {
+async function saveQuotation() {
   const lead = getSelectedLead();
   if (!lead) return null;
 
   const quotation = collectQuotationData();
   const totals = calculateQuotation(quotation);
-  const updatedLead = updateLead(lead.id, (draft) => ({
+  const updatedLead = await updateLead(lead.id, (draft) => ({
     ...draft,
     quotation: {
       ...quotation,
@@ -508,7 +714,7 @@ function buildQuotationDocumentHtml(lead) {
     ["7", "Earthing Wire", quote.earthingWire || "Standard 4 mm", "Set", "As required"],
     ["8", "DCDB & ACDB", quote.dcdbAcdb || "Standard", "Set", "As required"],
     ["9", "Balance of System", quote.balanceOfSystem || "MC4 connectors, lugs, nut bolts and other items", "Set", "As required"],
-    ["10", "Installation & Commissioning", quote.installationScope || "Surya Urja Enterprises", "Set", "As required"],
+    ["10", "Installation & Commissioning", quote.installationScope || "FLYINGAPES TECHNOLOGIES PRIVATE LIMITED", "Set", "As required"],
     ["11", "Mounting Structure", quote.structureType || "Standard", "Set", "As required"],
   ];
 
@@ -551,10 +757,11 @@ function buildQuotationDocumentHtml(lead) {
         <div class="brand-block">
           <img class="quotation-logo" src="${logoUrl}" alt="Your Energy">
           <div>
-            <span class="brand-kicker">Powered by Surya Urja Enterprises</span>
+            <span class="brand-kicker">Powered by FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</span>
             <h1>Solar Project Quotation</h1>
-            <p>Near Sanwali Circle, Sikar, Rajasthan - 332001</p>
-            <p>Phone: +91 90019 48181</p>
+            <p>Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana</p>
+            <p>Corporate Office: White house, shakti vihar, kotputli-303108, Rajasthan</p>
+            <p>Phone: +91 92618 69245</p>
           </div>
         </div>
         <div class="quotation-title-block">
@@ -635,9 +842,9 @@ function buildQuotationDocumentHtml(lead) {
           </div>
           <div>
             <strong>Yours Faithfully</strong>
-            <p>For Surya Urja Enterprises</p>
+            <p>For FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</p>
             <p>${escapeHtml(quote.preparedBy || "Authorized Signatory")}</p>
-            <p>+91 90019 48181</p>
+            <p>+91 92618 69245</p>
           </div>
         </div>
         <div class="quote-note"><strong>Remarks:</strong> ${escapeHtml(quote.remarks || "Final quotation is subject to site verification and approval requirements.")}</div>
@@ -645,7 +852,7 @@ function buildQuotationDocumentHtml(lead) {
 
       <footer class="quotation-footer">
         <span>Your Energy</span>
-        <span>Surya Urja Enterprises | Near Sanwali Circle, Sikar, Rajasthan - 332001 | +91 90019 48181</span>
+        <span>FLYINGAPES TECHNOLOGIES PRIVATE LIMITED | SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana | White house, shakti vihar, kotputli-303108, Rajasthan | +91 92618 69245</span>
       </footer>
     </article>
   `;
@@ -888,8 +1095,8 @@ function buildQuotationPrintStyles() {
   `;
 }
 
-function printQuotation() {
-  const lead = saveQuotation();
+async function printQuotation() {
+  const lead = await saveQuotation();
   if (!lead) return;
 
   const printWindow = window.open("", "_blank");
@@ -919,8 +1126,8 @@ function normalizePhoneNumber(phone) {
   return digits;
 }
 
-function sendQuotationOnWhatsapp() {
-  const lead = saveQuotation();
+async function sendQuotationOnWhatsapp() {
+  const lead = await saveQuotation();
   if (!lead) return;
 
   const phone = normalizePhoneNumber(lead.phone);
@@ -931,7 +1138,7 @@ function sendQuotationOnWhatsapp() {
 
   const total = formatCurrency(lead.quotation.total);
   const message = encodeURIComponent(
-    `Hello ${lead.name || ""},\n\nYour solar quotation from Surya Urja Enterprises is ready.\n\nSystem: ${lead.quotation.systemSize || "-"} kW ${lead.quotation.systemType || ""}\nPanel: ${lead.quotation.solarPanelBrand || "-"}\nInverter: ${lead.quotation.inverterBrand || "-"}\nFinal Quotation: ${total}\n\nWe will share the PDF quotation with you for review.`,
+    `Hello ${lead.name || ""},\n\nYour solar quotation from FLYINGAPES TECHNOLOGIES PRIVATE LIMITED is ready.\n\nSystem: ${lead.quotation.systemSize || "-"} kW ${lead.quotation.systemType || ""}\nPanel: ${lead.quotation.solarPanelBrand || "-"}\nInverter: ${lead.quotation.inverterBrand || "-"}\nFinal Quotation: ${total}\n\nWe will share the PDF quotation with you for review.`,
   );
 
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank", "noopener,noreferrer");
@@ -963,6 +1170,11 @@ function clearLeads() {
   const leads = readLeads();
   if (!leads.length) return;
 
+  if (isRemoteMode) {
+    window.alert("Bulk clear is disabled for production leads to avoid accidental data loss.");
+    return;
+  }
+
   const shouldClear = window.confirm("Clear all saved assessment leads from this browser?");
   if (!shouldClear) return;
 
@@ -972,22 +1184,120 @@ function clearLeads() {
   renderLeads();
 }
 
+async function refreshLeads() {
+  if (isRemoteMode && isAdminSignedIn) {
+    await fetchRemoteLeads();
+  }
+
+  renderLeads();
+}
+
+async function handleAdminLogin(event) {
+  event.preventDefault();
+  if (!supabaseClient) return;
+
+  const formData = new FormData(event.currentTarget);
+  setLoginStatus("Signing in...");
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email: String(formData.get("email") || "").trim(),
+    password: String(formData.get("password") || ""),
+  });
+
+  if (error) {
+    setLoginStatus(error.message);
+    return;
+  }
+
+  isAdminSignedIn = true;
+  setLoginStatus("");
+  setLoginVisibility(false);
+  setAdminAppVisibility(true);
+  setSignOutVisibility(true);
+  setAdminStorageNote(
+    "Live Supabase storage",
+    "Leads, statuses, documents, and quotations are now loading from the central production database.",
+  );
+  await refreshLeads();
+}
+
+async function handleAdminSignOut() {
+  if (!supabaseClient) return;
+
+  await supabaseClient.auth.signOut();
+  isAdminSignedIn = false;
+  leadCache = [];
+  selectedLeadId = null;
+  closeDetailPanel();
+  setAdminAppVisibility(false);
+  setLoginVisibility(true);
+  setSignOutVisibility(false);
+  renderLeads();
+}
+
+async function initializeAdminBackend() {
+  setAdminAppVisibility(true);
+  setLoginVisibility(false);
+  setSignOutVisibility(false);
+
+  if (!hasSupabaseConfig() || !window.supabase?.createClient) {
+    isRemoteMode = false;
+    setAdminStorageNote(
+      "Local fallback mode",
+      "Supabase is not configured yet, so this browser is showing only locally saved demo leads. Configure Supabase before using the admin panel for real customer data.",
+    );
+    renderLeads();
+    return;
+  }
+
+  const { url, anonKey } = getSupabaseConfig();
+  supabaseClient = window.supabase.createClient(url, anonKey);
+  isRemoteMode = true;
+  setAdminAppVisibility(false);
+  setAdminStorageNote(
+    "Live Supabase storage",
+    "Sign in to load production leads, documents, quotation data, and application statuses.",
+  );
+
+  const { data } = await supabaseClient.auth.getSession();
+  isAdminSignedIn = Boolean(data?.session);
+
+  if (!isAdminSignedIn) {
+    setLoginVisibility(true);
+    renderLeads();
+    return;
+  }
+
+  setLoginVisibility(false);
+  setAdminAppVisibility(true);
+  setSignOutVisibility(true);
+  await refreshLeads();
+}
+
 function closeDetailPanel() {
   selectedLeadId = null;
   const panel = document.querySelector("[data-lead-detail]");
   if (panel) panel.hidden = true;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderLeads();
+document.addEventListener("DOMContentLoaded", async () => {
+  await initializeAdminBackend();
 
-  document.querySelector("[data-refresh-leads]")?.addEventListener("click", renderLeads);
+  document.querySelector("[data-refresh-leads]")?.addEventListener("click", refreshLeads);
   document.querySelector("[data-export-leads]")?.addEventListener("click", exportLeads);
   document.querySelector("[data-clear-leads]")?.addEventListener("click", clearLeads);
   document.querySelector("[data-close-detail]")?.addEventListener("click", closeDetailPanel);
-  document.querySelector("[data-save-quotation]")?.addEventListener("click", saveQuotation);
-  document.querySelector("[data-print-quotation]")?.addEventListener("click", printQuotation);
-  document.querySelector("[data-whatsapp-quotation]")?.addEventListener("click", sendQuotationOnWhatsapp);
+  document.querySelector("[data-admin-login-form]")?.addEventListener("submit", handleAdminLogin);
+  document.querySelector("[data-admin-sign-out]")?.addEventListener("click", handleAdminSignOut);
+  document.querySelector("[data-save-quotation]")?.addEventListener("click", () => {
+    saveQuotation();
+  });
+  document.querySelector("[data-print-quotation]")?.addEventListener("click", () => {
+    printQuotation();
+  });
+  document.querySelector("[data-whatsapp-quotation]")?.addEventListener("click", () => {
+    sendQuotationOnWhatsapp();
+  });
   document.querySelector("[data-quotation-form]")?.addEventListener("input", () => {
     const lead = getSelectedLead();
     if (lead) renderQuotationPreview(lead);
@@ -996,11 +1306,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const lead = getSelectedLead();
     if (lead) renderQuotationPreview(lead);
   });
-  document.querySelector("[data-application-status]")?.addEventListener("change", (event) => {
+  document.querySelector("[data-application-status]")?.addEventListener("change", async (event) => {
     const lead = getSelectedLead();
     if (!lead) return;
 
-    const updatedLead = updateLead(lead.id, (draft) => ({
+    const updatedLead = await updateLead(lead.id, (draft) => ({
       ...draft,
       applicationStatus: event.target.value,
     }));
@@ -1010,6 +1320,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (event) => {
     const openButton = event.target.closest("[data-open-lead]");
     const removeButton = event.target.closest("[data-remove-document]");
+    const downloadButton = event.target.closest("[data-download-document]");
 
     if (openButton) {
       const lead = readLeads().find((item) => item.id === openButton.dataset.openLead);
@@ -1018,6 +1329,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (removeButton) {
       removeDocument(removeButton.dataset.removeDocument);
+    }
+
+    if (downloadButton) {
+      downloadRemoteDocument(downloadButton.dataset.downloadDocument);
     }
   });
 

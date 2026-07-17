@@ -7,6 +7,8 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="admin.js" defer></script>
 </head>
 <body class="admin-page">
@@ -18,7 +20,10 @@
           <img src="assets/logo-your-energy-web.png" alt="Your Energy logo">
         </picture>
       </a>
-      <a class="button button-secondary" href="index.html">View Website</a>
+      <div class="admin-header-actions">
+        <button class="button button-secondary" type="button" data-admin-sign-out hidden>Sign Out</button>
+        <a class="button button-secondary" href="index.html">View Website</a>
+      </div>
     </div>
   </header>
 
@@ -29,13 +34,33 @@
         <h1>Free Solar Assessment Leads</h1>
         <p>Review customer details captured from the first-page assessment form, including the calculated estimate and quote request status.</p>
       </div>
-      <div class="admin-note">
-        <strong>Local demo storage</strong>
-        <span>These records are saved in this browser. A live website needs a backend or database to collect leads from every customer device.</span>
+      <div class="admin-note" data-admin-storage-note>
+        <strong data-admin-storage-title>Checking backend</strong>
+        <span data-admin-storage-message>We are checking whether Supabase is configured for production lead storage.</span>
       </div>
     </section>
 
-    <section class="container admin-stat-grid" aria-label="Lead summary">
+    <section class="container admin-login-panel" data-admin-login hidden>
+      <div>
+        <span class="eyebrow">Secure Admin Access</span>
+        <h2>Sign in to view live leads</h2>
+        <p>Use the admin email and password created in Supabase Authentication.</p>
+      </div>
+      <form class="admin-login-form" data-admin-login-form>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label class="field">
+          <span>Password</span>
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button class="button button-primary" type="submit">Sign In</button>
+        <p class="admin-login-status" data-admin-login-status></p>
+      </form>
+    </section>
+
+    <section class="container admin-stat-grid" aria-label="Lead summary" data-admin-app>
       <article class="admin-stat-card">
         <span>Total Leads</span>
         <strong data-stat="total">0</strong>
@@ -54,7 +79,7 @@
       </article>
     </section>
 
-    <section class="container admin-panel">
+    <section class="container admin-panel" data-admin-app>
       <div class="admin-toolbar">
         <div>
           <h2>Assessment Records</h2>
