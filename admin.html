@@ -60,6 +60,30 @@
       </form>
     </section>
 
+    <section class="container admin-setup-guide" data-admin-setup hidden>
+      <div class="admin-setup-head">
+        <span class="eyebrow">Setup Required</span>
+        <h2>Finish Supabase setup before using live admin data</h2>
+        <p>The website can show demo data locally, but real production leads and documents need the Supabase project and Netlify function configured first.</p>
+      </div>
+
+      <ol class="admin-setup-steps">
+        <li>Open the Supabase project and run <code>supabase/schema.sql</code> in SQL Editor.</li>
+        <li>Create the admin email and password in Supabase Authentication.</li>
+        <li>Fill <code>supabase-config.js</code> with the project URL and anon key.</li>
+        <li>Add <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> in Netlify environment variables.</li>
+        <li>Deploy the site, then open <code>/admin.html</code> and sign in with the admin credentials.</li>
+      </ol>
+
+      <div class="admin-setup-code">
+        <strong>Browser config needed in <code>supabase-config.js</code></strong>
+        <pre><code>window.YourEnergySupabaseConfig = {
+  url: "https://YOUR_PROJECT_ID.supabase.co",
+  anonKey: "YOUR_SUPABASE_ANON_KEY",
+};</code></pre>
+      </div>
+    </section>
+
     <section class="container admin-stat-grid" aria-label="Lead summary" data-admin-app>
       <article class="admin-stat-card">
         <span>Total Leads</span>

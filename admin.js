@@ -78,6 +78,11 @@ function setLoginStatus(message) {
   setText("[data-admin-login-status]", message || "");
 }
 
+function setAdminSetupVisibility(isVisible) {
+  const panel = document.querySelector("[data-admin-setup]");
+  if (panel) panel.hidden = !isVisible;
+}
+
 function setSignOutVisibility(isVisible) {
   const button = document.querySelector("[data-admin-sign-out]");
   if (button) button.hidden = !isVisible;
@@ -1239,6 +1244,7 @@ async function initializeAdminBackend() {
   setAdminAppVisibility(true);
   setLoginVisibility(false);
   setSignOutVisibility(false);
+  setAdminSetupVisibility(false);
 
   if (!hasSupabaseConfig() || !window.supabase?.createClient) {
     isRemoteMode = false;
@@ -1246,6 +1252,7 @@ async function initializeAdminBackend() {
       "Local fallback mode",
       "Supabase is not configured yet, so this browser is showing only locally saved demo leads. Configure Supabase before using the admin panel for real customer data.",
     );
+    setAdminSetupVisibility(true);
     renderLeads();
     return;
   }
