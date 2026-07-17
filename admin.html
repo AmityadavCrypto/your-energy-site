@@ -10,6 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="admin.js" defer></script>
+  <script src="admin-gst-mode.js" defer></script>
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -305,8 +306,11 @@
                 <input type="number" name="projectCost" min="0" step="1000" placeholder="500000">
               </label>
               <label class="field">
-                <span>GST (%)</span>
-                <input type="number" name="gstPercent" min="0" step="0.1" placeholder="13.8">
+                <span>GST</span>
+                <select name="gstMode">
+                  <option>Exclusive of GST</option>
+                  <option>Inclusive of GST</option>
+                </select>
               </label>
               <label class="field">
                 <span>Subsidy / Discount</span>
