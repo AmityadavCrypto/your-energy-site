@@ -6,6 +6,22 @@ function normalizeGstMode(value) {
   return value === GST_MODE_INCLUSIVE ? GST_MODE_INCLUSIVE : GST_MODE_DEFAULT;
 }
 
+function buildYourEnergyLogoSvg(className = "quotation-logo-svg") {
+  return `
+    <svg class="${className}" viewBox="0 0 1400 599" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy">
+      <text x="98" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="4">Y</text>
+      <circle cx="610" cy="196" r="138" stroke="#08203F" stroke-width="86" stroke-dasharray="770 90" stroke-dashoffset="45" transform="rotate(-90 610 196)"/>
+      <rect x="567" y="36" width="86" height="216" rx="43" fill="#76C300"/>
+      <text x="742" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="10">U</text>
+      <text x="1008" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="4">R</text>
+      <text x="218" y="474" fill="#76C300" font-size="108" font-weight="700" font-family="Montserrat, Avenir Next, Arial, sans-serif" letter-spacing="44">ENERGY</text>
+      <line x1="180" y1="535" x2="332" y2="535" stroke="#76C300" stroke-width="6"/>
+      <line x1="1164" y1="535" x2="1316" y2="535" stroke="#76C300" stroke-width="6"/>
+      <text x="397" y="558" fill="#4D6582" font-size="56" font-weight="500" font-family="Montserrat, Avenir Next, Arial, sans-serif" letter-spacing="8">POWERING YOUR FUTURE</text>
+    </svg>
+  `;
+}
+
 function ensureGstModeField() {
   const form = document.querySelector("[data-quotation-form]");
   if (!form) return null;
@@ -113,7 +129,6 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const panelQuantity = quote.panelQuantity ? `${quote.panelQuantity} Nos.` : "-";
   const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
   const quotationDate = formatQuotationDate(quote.quotationDate);
-  const logoUrl = getAssetUrl("assets/logo-your-energy-web.png");
 
   const customerRows = [
     ["Customer Name", lead.name || "-"],
@@ -174,7 +189,9 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
     <article class="quotation-document">
       <header class="quotation-masthead">
         <div class="brand-block">
-          <img class="quotation-logo" src="${logoUrl}" alt="Your Energy">
+          <div class="quotation-logo">
+            ${buildYourEnergyLogoSvg("quotation-logo-svg quotation-logo-svg--primary")}
+          </div>
           <div>
             <span class="brand-kicker">Powered by FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</span>
             <h1>Solar Project Quotation</h1>
@@ -184,7 +201,9 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           </div>
         </div>
         <div class="quotation-title-block">
-          <img src="${logoUrl}" alt="Your Energy">
+          <div class="quotation-card-logo">
+            ${buildYourEnergyLogoSvg("quotation-logo-svg quotation-logo-svg--card")}
+          </div>
           <span>Final Quotation</span>
           <strong>${formatCurrency(totals.total)}</strong>
           <p>Date: ${escapeHtml(quotationDate)}</p>
@@ -272,6 +291,65 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   `;
 };
 
+async function waitForPrintWindowAssets(printWindow) {
+  if (!printWindow) return;
+
+  const imagePromises = Array.from(printWindow.document.images || []).map(
+    (image) =>
+      new Promise((resolve) => {
+        if (image.complete) {
+          resolve();
+          return;
+        }
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      }),
+  );
+
+  await Promise.all(imagePromises);
+
+  if (printWindow.document.fonts?.ready) {
+    await printWindow.document.fonts.ready;
+  }
+
+  await new Promise((resolve) => {
+    if (typeof printWindow.requestAnimationFrame === "function") {
+      printWindow.requestAnimationFrame(() => {
+        printWindow.requestAnimationFrame(resolve);
+      });
+      return;
+    }
+    setTimeout(resolve, 250);
+  });
+}
+
+printQuotation = async function printQuotationWithAssetWait() {
+  const lead = await saveQuotation();
+  if (!lead) return;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    window.alert("Please allow popups to generate the quotation PDF.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
+        <style>${buildQuotationPrintStyles()}</style>
+      </head>
+      <body>${buildQuotationDocumentHtml(lead)}</body>
+    </html>
+  `);
+  printWindow.document.close();
+
+  await waitForPrintWindowAssets(printWindow);
+  printWindow.focus();
+  printWindow.print();
+};
+
 buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
   return `
     @page { size: A4; margin: 14mm; }
@@ -315,8 +393,16 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     }
     .quotation-logo {
       width: 145px;
+      display: flex;
+      align-items: center;
+    }
+    .quotation-logo-svg {
+      width: 100%;
       height: auto;
       display: block;
+    }
+    .quotation-logo-svg--primary {
+      min-width: 145px;
     }
     .brand-kicker {
       display: inline-block;
@@ -351,15 +437,12 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       border: 1px solid #d5e4d6;
       box-shadow: 0 14px 34px rgba(8, 32, 63, 0.08);
     }
-    .quotation-title-block img {
+    .quotation-card-logo {
       width: 132px;
-      height: auto;
-      object-fit: contain;
       justify-self: end;
-      padding: 0;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
+    }
+    .quotation-logo-svg--card {
+      width: 100%;
     }
     .quotation-title-block span {
       display: block;
