@@ -1,25 +1,40 @@
 const GST_MODE_DEFAULT = "Exclusive of GST";
 const GST_MODE_INCLUSIVE = "Inclusive of GST";
 const GST_PERCENT = 13.8;
+const QUOTATION_LOGO_ASSET_PATH = "assets/logo-your-energy-web.png";
+
+let quotationLogoDataUrlPromise = null;
 
 function normalizeGstMode(value) {
   return value === GST_MODE_INCLUSIVE ? GST_MODE_INCLUSIVE : GST_MODE_DEFAULT;
 }
 
-function buildYourEnergyLogoSvg(className = "quotation-logo-svg") {
-  return `
-    <svg class="${className}" viewBox="0 0 1400 599" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy">
-      <text x="98" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="4">Y</text>
-      <circle cx="610" cy="196" r="138" stroke="#08203F" stroke-width="86" stroke-dasharray="770 90" stroke-dashoffset="45" transform="rotate(-90 610 196)"/>
-      <rect x="567" y="36" width="86" height="216" rx="43" fill="#76C300"/>
-      <text x="742" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="10">U</text>
-      <text x="1008" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="Avenir Next Condensed, Avenir Next, Montserrat, Arial Black, sans-serif" letter-spacing="4">R</text>
-      <text x="218" y="474" fill="#76C300" font-size="108" font-weight="700" font-family="Montserrat, Avenir Next, Arial, sans-serif" letter-spacing="44">ENERGY</text>
-      <line x1="180" y1="535" x2="332" y2="535" stroke="#76C300" stroke-width="6"/>
-      <line x1="1164" y1="535" x2="1316" y2="535" stroke="#76C300" stroke-width="6"/>
-      <text x="397" y="558" fill="#4D6582" font-size="56" font-weight="500" font-family="Montserrat, Avenir Next, Arial, sans-serif" letter-spacing="8">POWERING YOUR FUTURE</text>
-    </svg>
-  `;
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error("Could not convert blob to data URL."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function fetchAssetAsDataUrl(path) {
+  const assetUrl = new URL(path, window.location.href).href;
+  const response = await fetch(assetUrl, { cache: "force-cache" });
+  if (!response.ok) {
+    throw new Error(`Could not load asset: ${path}`);
+  }
+
+  const blob = await response.blob();
+  return blobToDataUrl(blob);
+}
+
+function getQuotationLogoDataUrl() {
+  if (!quotationLogoDataUrlPromise) {
+    quotationLogoDataUrlPromise = fetchAssetAsDataUrl(QUOTATION_LOGO_ASSET_PATH).catch(() => null);
+  }
+
+  return quotationLogoDataUrlPromise;
 }
 
 function ensureGstModeField() {
@@ -121,7 +136,7 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
   `;
 };
 
-buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead) {
+buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead, assets = {}) {
   const { quote, totals } = getQuotationWithTotals(lead);
   const systemSize = quote.systemSize || Number.parseFloat(String(lead.estimatedSystem || "").replace(/[^\d.]/g, "")) || "-";
   const projectType = `${systemSize} kW ${quote.systemType || "Solar"} Rooftop Solar Power Plant`;
@@ -129,6 +144,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const panelQuantity = quote.panelQuantity ? `${quote.panelQuantity} Nos.` : "-";
   const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
   const quotationDate = formatQuotationDate(quote.quotationDate);
+  const logoSrc = assets.logoSrc || getAssetUrl(QUOTATION_LOGO_ASSET_PATH);
 
   const customerRows = [
     ["Customer Name", lead.name || "-"],
@@ -189,9 +205,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
     <article class="quotation-document">
       <header class="quotation-masthead">
         <div class="brand-block">
-          <div class="quotation-logo">
-            ${buildYourEnergyLogoSvg("quotation-logo-svg quotation-logo-svg--primary")}
-          </div>
+          <img class="quotation-logo" src="${logoSrc}" alt="Your Energy">
           <div>
             <span class="brand-kicker">Powered by FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</span>
             <h1>Solar Project Quotation</h1>
@@ -201,9 +215,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           </div>
         </div>
         <div class="quotation-title-block">
-          <div class="quotation-card-logo">
-            ${buildYourEnergyLogoSvg("quotation-logo-svg quotation-logo-svg--card")}
-          </div>
+          <img class="quotation-card-logo" src="${logoSrc}" alt="Your Energy">
           <span>Final Quotation</span>
           <strong>${formatCurrency(totals.total)}</strong>
           <p>Date: ${escapeHtml(quotationDate)}</p>
@@ -333,6 +345,8 @@ printQuotation = async function printQuotationWithAssetWait() {
     return;
   }
 
+  const logoSrc = (await getQuotationLogoDataUrl()) || getAssetUrl(QUOTATION_LOGO_ASSET_PATH);
+
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
@@ -340,7 +354,7 @@ printQuotation = async function printQuotationWithAssetWait() {
         <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
         <style>${buildQuotationPrintStyles()}</style>
       </head>
-      <body>${buildQuotationDocumentHtml(lead)}</body>
+      <body>${buildQuotationDocumentHtml(lead, { logoSrc })}</body>
     </html>
   `);
   printWindow.document.close();
@@ -393,16 +407,8 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     }
     .quotation-logo {
       width: 145px;
-      display: flex;
-      align-items: center;
-    }
-    .quotation-logo-svg {
-      width: 100%;
       height: auto;
       display: block;
-    }
-    .quotation-logo-svg--primary {
-      min-width: 145px;
     }
     .brand-kicker {
       display: inline-block;
@@ -439,10 +445,9 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     }
     .quotation-card-logo {
       width: 132px;
+      height: auto;
       justify-self: end;
-    }
-    .quotation-logo-svg--card {
-      width: 100%;
+      display: block;
     }
     .quotation-title-block span {
       display: block;
