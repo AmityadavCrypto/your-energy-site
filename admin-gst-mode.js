@@ -99,7 +99,7 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
       <span>System Size</span><strong>${escapeHtml(quote.systemSize || "-")} kW</strong>
       <span>System Type</span><strong>${escapeHtml(quote.systemType)}</strong>
       <span>GST Mode</span><strong>${escapeHtml(totals.gstMode)}</strong>
-      <span>Subsidy / Discount</span><strong>${formatCurrency(totals.discount)}</strong>
+      <span>Subsidy</span><strong>${formatCurrency(totals.discount)}</strong>
       <span>Balance</span><strong>${formatCurrency(totals.balance)}</strong>
     </div>
   `;
@@ -140,11 +140,10 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   ];
 
   const commercialRows = [
-    ["1", "Project Cost", formatCurrency(totals.subtotal)],
-    ["2", "GST Type", totals.gstMode],
-    ["3", "Subsidy / Discount", formatCurrency(totals.discount)],
-    ["4", "Final Quotation", formatCurrency(totals.total)],
-    ["5", "DISCOM / Net Metering Charges", "Government / DISCOM charges are extra unless specifically included in writing."],
+    ["1", "GST Type", totals.gstMode],
+    ["2", "Subsidy", formatCurrency(totals.discount)],
+    ["3", "Final Quotation", formatCurrency(totals.total)],
+    ["4", "DISCOM / Net Metering Charges", "Government / DISCOM charges are extra unless specifically included in writing."],
   ];
 
   const termRows = [
@@ -230,7 +229,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           <thead><tr><th>Sr.</th><th>Description</th><th>Amount / Details</th></tr></thead>
           <tbody>${buildDataRows(commercialRows)}</tbody>
         </table>
-        <div class="quote-note"><strong>Note:</strong> Subsidy / discount is shown separately for reference and is not deducted from the final quotation amount.</div>
+        <div class="quote-note"><strong>Note:</strong> Subsidy is shown separately for reference and is not deducted from the final quotation amount.</div>
       </section>
 
       <section class="quote-section">
