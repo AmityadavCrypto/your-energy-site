@@ -208,6 +208,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
             <h1>Solar Project Quotation</h1>
             <p>Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana</p>
             <p>Corporate Office: White house, shakti vihar, kotputli-303108, Rajasthan</p>
+            <p>Website: <a class="quotation-website-link" href="https://yourenergy.co.in/" target="_blank" rel="noopener noreferrer">www.yourenergy.co.in</a></p>
             <p>Phone: +91 92618 69245</p>
           </div>
         </div>
@@ -398,6 +399,11 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     .intro-copy,
     .closing-section p {
       margin: 4px 0;
+    }
+    .quotation-website-link {
+      color: #08203f;
+      font-weight: 700;
+      text-decoration: none;
     }
     .quotation-title-block {
       display: grid;
