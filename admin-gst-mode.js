@@ -402,6 +402,7 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     .quotation-title-block {
       display: grid;
       align-content: space-between;
+      justify-items: end;
       min-height: 166px;
       padding: 16px;
       border-radius: 18px;
@@ -412,8 +413,8 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       box-shadow: 0 14px 34px rgba(8, 32, 63, 0.08);
     }
     .quotation-card-logo {
-      width: 54px;
-      height: 54px;
+      width: 58px;
+      height: 58px;
       justify-self: end;
       display: block;
     }
