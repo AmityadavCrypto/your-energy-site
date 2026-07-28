@@ -242,7 +242,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
         <p class="intro-copy">Dear Sir, with reference to our discussion, we are pleased to submit our professional proposal for the above rooftop solar power plant.</p>
       </section>
 
-      <section class="quote-section">
+      <section class="quote-section bom-section">
         <h2>Bill of Material</h2>
         <table class="data-table">
           <thead><tr><th>Sr.</th><th>Technical Details</th><th>Make</th><th>Capacity</th><th>Quantity</th></tr></thead>
@@ -251,7 +251,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
         <div class="quote-note"><strong>Space Requirement:</strong> The customer shall provide shadow-free roof space suitable for solar module installation and safe access for installation activity.</div>
       </section>
 
-      <section class="quote-section page-break-before">
+      <section class="quote-section">
         <h2>Commercial Offer</h2>
         <table class="data-table compact-table">
           <thead><tr><th>Sr.</th><th>Description</th><th>Amount / Details</th></tr></thead>
@@ -405,6 +405,11 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       font-weight: 700;
       text-decoration: none;
     }
+    .intro-copy {
+      margin: 14px 2px 0;
+      color: #31465d;
+      line-height: 1.5;
+    }
     .quotation-title-block {
       display: grid;
       align-content: space-between;
@@ -468,6 +473,11 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     .quote-section {
       margin: 18px 18mm 0;
       break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .bom-section {
+      break-inside: auto;
+      page-break-inside: auto;
     }
     .quote-section h2 {
       margin: 0 0 10px;
@@ -477,12 +487,22 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       border-left: 5px solid #76c300;
       background: #f1f7eb;
       border-radius: 10px;
+      break-after: avoid;
+      page-break-after: avoid;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
       margin-top: 8px;
+    }
+    thead {
+      display: table-header-group;
+    }
+    tr,
+    .quote-note {
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
     th,
     td {
@@ -567,7 +587,6 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       .quote-hero-strip { padding: 0; }
       .quote-section { margin-left: 0; margin-right: 0; }
       .quotation-footer { padding-left: 0; padding-right: 0; }
-      .page-break-before { break-before: page; }
     }
   `;
 };
