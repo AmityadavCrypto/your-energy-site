@@ -1,6 +1,6 @@
 (function initQuotationBrandAssets() {
   const FULL_LOGO_PATH = "assets/logo-your-energy-web.png";
-  const EXACT_MARK_WIDTH = 376;
+  const EXACT_MARK_WIDTH = 362;
   const EXACT_MARK_HEIGHT = 378;
   const EXACT_MARK_SOURCE_X = 349;
   const EXACT_MARK_SOURCE_Y = 0;
@@ -49,8 +49,13 @@
   }
 
   function buildExactMarkSvgMarkup(imageHref, className = "quotation-card-logo") {
-    return `<svg class="${escapeAttribute(className)}" viewBox="0 0 ${EXACT_MARK_WIDTH} ${EXACT_MARK_HEIGHT}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
-  <image href="${escapeAttribute(imageHref)}" x="-${EXACT_MARK_SOURCE_X}" y="-${EXACT_MARK_SOURCE_Y}" width="${FULL_LOGO_WIDTH}" height="${FULL_LOGO_HEIGHT}"/>
+    return `<svg class="${escapeAttribute(className)}" viewBox="0 0 ${EXACT_MARK_WIDTH} ${EXACT_MARK_HEIGHT}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+  <defs>
+    <clipPath id="quotation-mark-artwork-clip">
+      <path d="M 4 0 H ${EXACT_MARK_WIDTH} V ${EXACT_MARK_HEIGHT} H 0 V 80 H 4 Z"/>
+    </clipPath>
+  </defs>
+  <image href="${escapeAttribute(imageHref)}" x="-${EXACT_MARK_SOURCE_X}" y="-${EXACT_MARK_SOURCE_Y}" width="${FULL_LOGO_WIDTH}" height="${FULL_LOGO_HEIGHT}" clip-path="url(#quotation-mark-artwork-clip)"/>
 </svg>`;
   }
 
