@@ -1,40 +1,81 @@
 const GST_MODE_DEFAULT = "Exclusive of GST";
 const GST_MODE_INCLUSIVE = "Inclusive of GST";
 const GST_PERCENT = 13.8;
-const QUOTATION_LOGO_ASSET_PATH = "assets/logo-your-energy-web.png";
+const QUOTATION_FULL_LOGO_SVG = String.raw`<svg viewBox="0 0 1400 599" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy logo" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
+  <text x="98" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="4">Y</text>
+  <circle cx="610" cy="196" r="138" fill="none" stroke="#08203F" stroke-width="86" stroke-dasharray="770 90" stroke-dashoffset="45" transform="rotate(-90 610 196)"/>
+  <rect x="567" y="36" width="86" height="216" rx="43" fill="#76C300"/>
+  <text x="742" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="10">U</text>
+  <text x="1008" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="4">R</text>
+  <text x="218" y="474" fill="#76C300" font-size="108" font-weight="700" font-family="'Montserrat','Avenir Next','Arial',sans-serif" letter-spacing="44">ENERGY</text>
+  <line x1="180" y1="535" x2="332" y2="535" stroke="#76C300" stroke-width="6"/>
+  <line x1="1164" y1="535" x2="1316" y2="535" stroke="#76C300" stroke-width="6"/>
+  <text x="397" y="558" fill="#526982" font-size="56" font-weight="500" font-family="'Montserrat','Avenir Next','Arial',sans-serif" letter-spacing="8">POWERING YOUR FUTURE</text>
+</svg>`;
+const QUOTATION_MARK_SVG = String.raw`<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy mark" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
+  <circle cx="512" cy="560" r="280" fill="none" stroke="#08203F" stroke-width="116" stroke-dasharray="1585 175" stroke-dashoffset="88" transform="rotate(-90 512 560)"/>
+  <rect x="454" y="104" width="116" height="394" rx="58" fill="#76C300"/>
+</svg>`;
 
-let quotationLogoDataUrlPromise = null;
-
-function normalizeGstMode(value) {
-  return value === GST_MODE_INCLUSIVE ? GST_MODE_INCLUSIVE : GST_MODE_DEFAULT;
+function escapeAttribute(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error || new Error("Could not convert blob to data URL."));
-    reader.readAsDataURL(blob);
+function withClass(svgMarkup, className) {
+  if (!className) return svgMarkup;
+  return svgMarkup.replace("<svg ", `<svg class="${escapeAttribute(className)}" `);
+}
+
+function getQuotationBrandMarkup() {
+  return {
+    fullLogo: withClass(QUOTATION_FULL_LOGO_SVG, "quotation-logo"),
+    mark: withClass(QUOTATION_MARK_SVG, "quotation-card-logo"),
+  };
+}
+
+async function waitForPrintDocumentReady(printWindow) {
+  if (!printWindow?.document) return;
+
+  const imagePromises = Array.from(printWindow.document.images || []).map(
+    (image) =>
+      new Promise((resolve) => {
+        if (image.complete) {
+          resolve();
+          return;
+        }
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+        setTimeout(resolve, 1500);
+      }),
+  );
+
+  await Promise.all(imagePromises);
+
+  if (printWindow.document.fonts?.ready) {
+    try {
+      await printWindow.document.fonts.ready;
+    } catch (error) {
+      console.warn("Quotation print fonts did not finish loading cleanly.", error);
+    }
+  }
+
+  await new Promise((resolve) => {
+    if (typeof printWindow.requestAnimationFrame === "function") {
+      printWindow.requestAnimationFrame(() => {
+        printWindow.requestAnimationFrame(resolve);
+      });
+      return;
+    }
+    setTimeout(resolve, 250);
   });
 }
 
-async function fetchAssetAsDataUrl(path) {
-  const assetUrl = new URL(path, window.location.href).href;
-  const response = await fetch(assetUrl, { cache: "force-cache" });
-  if (!response.ok) {
-    throw new Error(`Could not load asset: ${path}`);
-  }
-
-  const blob = await response.blob();
-  return blobToDataUrl(blob);
-}
-
-function getQuotationLogoDataUrl() {
-  if (!quotationLogoDataUrlPromise) {
-    quotationLogoDataUrlPromise = fetchAssetAsDataUrl(QUOTATION_LOGO_ASSET_PATH).catch(() => null);
-  }
-
-  return quotationLogoDataUrlPromise;
+function normalizeGstMode(value) {
+  return value === GST_MODE_INCLUSIVE ? GST_MODE_INCLUSIVE : GST_MODE_DEFAULT;
 }
 
 function ensureGstModeField() {
@@ -136,7 +177,7 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
   `;
 };
 
-buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead, assets = {}) {
+buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead) {
   const { quote, totals } = getQuotationWithTotals(lead);
   const systemSize = quote.systemSize || Number.parseFloat(String(lead.estimatedSystem || "").replace(/[^\d.]/g, "")) || "-";
   const projectType = `${systemSize} kW ${quote.systemType || "Solar"} Rooftop Solar Power Plant`;
@@ -144,7 +185,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const panelQuantity = quote.panelQuantity ? `${quote.panelQuantity} Nos.` : "-";
   const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
   const quotationDate = formatQuotationDate(quote.quotationDate);
-  const logoSrc = assets.logoSrc || getAssetUrl(QUOTATION_LOGO_ASSET_PATH);
+  const brandMarkup = getQuotationBrandMarkup();
 
   const customerRows = [
     ["Customer Name", lead.name || "-"],
@@ -205,7 +246,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
     <article class="quotation-document">
       <header class="quotation-masthead">
         <div class="brand-block">
-          <img class="quotation-logo" src="${logoSrc}" alt="Your Energy">
+          ${brandMarkup.fullLogo}
           <div>
             <span class="brand-kicker">Powered by FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</span>
             <h1>Solar Project Quotation</h1>
@@ -215,7 +256,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           </div>
         </div>
         <div class="quotation-title-block">
-          <img class="quotation-card-logo" src="${logoSrc}" alt="Your Energy">
+          ${brandMarkup.mark}
           <span>Final Quotation</span>
           <strong>${formatCurrency(totals.total)}</strong>
           <p>Date: ${escapeHtml(quotationDate)}</p>
@@ -303,38 +344,6 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   `;
 };
 
-async function waitForPrintWindowAssets(printWindow) {
-  if (!printWindow) return;
-
-  const imagePromises = Array.from(printWindow.document.images || []).map(
-    (image) =>
-      new Promise((resolve) => {
-        if (image.complete) {
-          resolve();
-          return;
-        }
-        image.addEventListener("load", resolve, { once: true });
-        image.addEventListener("error", resolve, { once: true });
-      }),
-  );
-
-  await Promise.all(imagePromises);
-
-  if (printWindow.document.fonts?.ready) {
-    await printWindow.document.fonts.ready;
-  }
-
-  await new Promise((resolve) => {
-    if (typeof printWindow.requestAnimationFrame === "function") {
-      printWindow.requestAnimationFrame(() => {
-        printWindow.requestAnimationFrame(resolve);
-      });
-      return;
-    }
-    setTimeout(resolve, 250);
-  });
-}
-
 printQuotation = async function printQuotationWithAssetWait() {
   const lead = await saveQuotation();
   if (!lead) return;
@@ -345,8 +354,6 @@ printQuotation = async function printQuotationWithAssetWait() {
     return;
   }
 
-  const logoSrc = (await getQuotationLogoDataUrl()) || getAssetUrl(QUOTATION_LOGO_ASSET_PATH);
-
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
@@ -354,12 +361,12 @@ printQuotation = async function printQuotationWithAssetWait() {
         <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
         <style>${buildQuotationPrintStyles()}</style>
       </head>
-      <body>${buildQuotationDocumentHtml(lead, { logoSrc })}</body>
+      <body>${buildQuotationDocumentHtml(lead)}</body>
     </html>
   `);
   printWindow.document.close();
 
-  await waitForPrintWindowAssets(printWindow);
+  await waitForPrintDocumentReady(printWindow);
   printWindow.focus();
   printWindow.print();
 };
@@ -444,8 +451,8 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       box-shadow: 0 14px 34px rgba(8, 32, 63, 0.08);
     }
     .quotation-card-logo {
-      width: 132px;
-      height: auto;
+      width: 54px;
+      height: 54px;
       justify-self: end;
       display: block;
     }
