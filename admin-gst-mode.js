@@ -1,77 +1,33 @@
 const GST_MODE_DEFAULT = "Exclusive of GST";
 const GST_MODE_INCLUSIVE = "Inclusive of GST";
 const GST_PERCENT = 13.8;
-const QUOTATION_FULL_LOGO_SVG = String.raw`<svg viewBox="0 0 1400 599" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy logo" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
-  <text x="98" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="4">Y</text>
-  <circle cx="610" cy="196" r="138" fill="none" stroke="#08203F" stroke-width="86" stroke-dasharray="770 90" stroke-dashoffset="45" transform="rotate(-90 610 196)"/>
-  <rect x="567" y="36" width="86" height="216" rx="43" fill="#76C300"/>
-  <text x="742" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="10">U</text>
-  <text x="1008" y="338" fill="#08203F" font-size="322" font-weight="800" font-family="'Avenir Next Condensed','Avenir Next','Arial Narrow','Montserrat','Arial Black',sans-serif" letter-spacing="4">R</text>
-  <text x="218" y="474" fill="#76C300" font-size="108" font-weight="700" font-family="'Montserrat','Avenir Next','Arial',sans-serif" letter-spacing="44">ENERGY</text>
-  <line x1="180" y1="535" x2="332" y2="535" stroke="#76C300" stroke-width="6"/>
-  <line x1="1164" y1="535" x2="1316" y2="535" stroke="#76C300" stroke-width="6"/>
-  <text x="397" y="558" fill="#526982" font-size="56" font-weight="500" font-family="'Montserrat','Avenir Next','Arial',sans-serif" letter-spacing="8">POWERING YOUR FUTURE</text>
-</svg>`;
-const QUOTATION_MARK_SVG = String.raw`<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your Energy mark" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
-  <circle cx="512" cy="560" r="280" fill="none" stroke="#08203F" stroke-width="116" stroke-dasharray="1585 175" stroke-dashoffset="88" transform="rotate(-90 512 560)"/>
-  <rect x="454" y="104" width="116" height="394" rx="58" fill="#76C300"/>
-</svg>`;
 
-function escapeAttribute(value) {
-  return String(value || "")
-    .replaceAll("&", "&amp;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
+function getQuotationBrandMarkup(assets = {}) {
+  const brandAssets = window.QuotationBrandAssets || {};
 
-function withClass(svgMarkup, className) {
-  if (!className) return svgMarkup;
-  return svgMarkup.replace("<svg ", `<svg class="${escapeAttribute(className)}" `);
-}
-
-function getQuotationBrandMarkup() {
   return {
-    fullLogo: withClass(QUOTATION_FULL_LOGO_SVG, "quotation-logo"),
-    mark: withClass(QUOTATION_MARK_SVG, "quotation-card-logo"),
+    fullLogo:
+      typeof brandAssets.buildFullLogoMarkup === "function"
+        ? brandAssets.buildFullLogoMarkup("quotation-logo", assets.fullLogoSrc)
+        : `<img class="quotation-logo" src="${assets.fullLogoSrc || getAssetUrl("assets/logo-your-energy-web.png")}" alt="Your Energy" width="1384" height="593" loading="eager" decoding="sync">`,
+    mark:
+      typeof brandAssets.buildMarkMarkup === "function"
+        ? brandAssets.buildMarkMarkup("quotation-card-logo", assets.markSrc)
+        : `<img class="quotation-card-logo" src="${assets.markSrc || getAssetUrl("assets/your-energy-mark.svg")}" alt="" aria-hidden="true" width="1024" height="1024" loading="eager" decoding="sync">`,
   };
 }
 
-async function waitForPrintDocumentReady(printWindow) {
-  if (!printWindow?.document) return;
+async function getQuotationPrintAssets() {
+  const brandAssets = window.QuotationBrandAssets || {};
 
-  const imagePromises = Array.from(printWindow.document.images || []).map(
-    (image) =>
-      new Promise((resolve) => {
-        if (image.complete) {
-          resolve();
-          return;
-        }
-        image.addEventListener("load", resolve, { once: true });
-        image.addEventListener("error", resolve, { once: true });
-        setTimeout(resolve, 1500);
-      }),
-  );
-
-  await Promise.all(imagePromises);
-
-  if (printWindow.document.fonts?.ready) {
-    try {
-      await printWindow.document.fonts.ready;
-    } catch (error) {
-      console.warn("Quotation print fonts did not finish loading cleanly.", error);
-    }
+  if (typeof brandAssets.getPrintAssets === "function") {
+    return brandAssets.getPrintAssets();
   }
 
-  await new Promise((resolve) => {
-    if (typeof printWindow.requestAnimationFrame === "function") {
-      printWindow.requestAnimationFrame(() => {
-        printWindow.requestAnimationFrame(resolve);
-      });
-      return;
-    }
-    setTimeout(resolve, 250);
-  });
+  return {
+    fullLogoSrc: getAssetUrl("assets/logo-your-energy-web.png"),
+    markSrc: getAssetUrl("assets/your-energy-mark.svg"),
+  };
 }
 
 function normalizeGstMode(value) {
@@ -177,7 +133,7 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
   `;
 };
 
-buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead) {
+buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead, assets = {}) {
   const { quote, totals } = getQuotationWithTotals(lead);
   const systemSize = quote.systemSize || Number.parseFloat(String(lead.estimatedSystem || "").replace(/[^\d.]/g, "")) || "-";
   const projectType = `${systemSize} kW ${quote.systemType || "Solar"} Rooftop Solar Power Plant`;
@@ -185,7 +141,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   const panelQuantity = quote.panelQuantity ? `${quote.panelQuantity} Nos.` : "-";
   const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
   const quotationDate = formatQuotationDate(quote.quotationDate);
-  const brandMarkup = getQuotationBrandMarkup();
+  const brandMarkup = getQuotationBrandMarkup(assets);
 
   const customerRows = [
     ["Customer Name", lead.name || "-"],
@@ -354,6 +310,8 @@ printQuotation = async function printQuotationWithAssetWait() {
     return;
   }
 
+  const { fullLogoSrc, markSrc } = await getQuotationPrintAssets();
+
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
@@ -361,7 +319,10 @@ printQuotation = async function printQuotationWithAssetWait() {
         <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
         <style>${buildQuotationPrintStyles()}</style>
       </head>
-      <body>${buildQuotationDocumentHtml(lead)}</body>
+      <body>${buildQuotationDocumentHtml(lead, {
+        fullLogoSrc,
+        markSrc,
+      })}</body>
     </html>
   `);
   printWindow.document.close();
