@@ -207,7 +207,8 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
             <span class="brand-kicker">Powered by FLYINGAPES TECHNOLOGIES PRIVATE LIMITED</span>
             <h1>Solar Project Quotation</h1>
             <p>Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana</p>
-            <p>Corporate Office: White house, shakti vihar, kotputli-303108, Rajasthan</p>
+            <p>Branch 1: White House, Shakti Vihar, Kotputli - 303108, Rajasthan</p>
+            <p>Branch 2: Sanwali Circle, Sikar - 332021</p>
             <p>Website: <a class="quotation-website-link" href="https://yourenergy.co.in/" target="_blank" rel="noopener noreferrer">www.yourenergy.co.in</a></p>
             <p>Phone: +91 92618 69245</p>
           </div>
@@ -295,7 +296,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
 
       <footer class="quotation-footer">
         <span>Your Energy</span>
-        <span>FLYINGAPES TECHNOLOGIES PRIVATE LIMITED | SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana | White house, shakti vihar, kotputli-303108, Rajasthan | +91 92618 69245</span>
+        <span>FLYINGAPES TECHNOLOGIES PRIVATE LIMITED | Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana | Branch 1: White House, Shakti Vihar, Kotputli - 303108, Rajasthan | Branch 2: Sanwali Circle, Sikar - 332021 | +91 92618 69245</span>
       </footer>
     </article>
   `;
