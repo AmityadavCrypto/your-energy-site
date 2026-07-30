@@ -778,7 +778,7 @@ button {
 
 .footer-shell {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: 1.05fr 0.65fr 1.3fr;
   gap: 2rem;
   align-items: start;
 }
@@ -800,6 +800,14 @@ button {
   max-width: 44ch;
   line-height: 1.7;
   margin: 0;
+}
+
+.footer-contact-tools {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .footer-direct-contact {
@@ -863,22 +871,20 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid transparent;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
   color: white;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
-    background 180ms ease,
-    color 180ms ease;
+    filter 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .footer-social-icons a:hover {
   transform: translateY(-3px);
-  border-color: rgba(152, 224, 0, 0.5);
-  background: var(--accent);
-  color: var(--brand);
+  filter: brightness(1.08);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
 }
 
 .footer-social-icons a:focus-visible {
@@ -904,6 +910,35 @@ button {
 .footer-social-icons .icon-fill {
   fill: currentColor;
   stroke: none;
+}
+
+.footer-social-icons .icon-multicolor {
+  stroke: none;
+}
+
+.footer-social-icons .social-whatsapp {
+  background: #25d366;
+  border-color: #25d366;
+}
+
+.footer-social-icons .social-instagram {
+  background:
+    radial-gradient(circle at 31% 107%, #fdf497 0 5%, #fdf497 6%, #fd5949 40%, #d6249f 63%, #285aeb 100%);
+}
+
+.footer-social-icons .social-facebook {
+  background: #1877f2;
+  border-color: #1877f2;
+}
+
+.footer-social-icons .social-x {
+  background: #000;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.footer-social-icons .social-google {
+  background: #fff;
+  border-color: rgba(255, 255, 255, 0.72);
 }
 
 .footer-column-title {
