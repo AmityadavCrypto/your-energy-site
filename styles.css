@@ -941,6 +941,11 @@ button {
   border-color: rgba(255, 255, 255, 0.72);
 }
 
+.footer-social-icons .social-youtube {
+  background: #ff0000;
+  border-color: #ff0000;
+}
+
 .footer-column-title {
   margin-bottom: 0.25rem;
   color: white;
