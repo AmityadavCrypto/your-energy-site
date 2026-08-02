@@ -78,9 +78,79 @@ function setupMobileMenu() {
   });
 }
 
+function createOfferingLink(href, label, description) {
+  const link = document.createElement("a");
+  const title = document.createElement("strong");
+  const detail = document.createElement("span");
+
+  link.href = href;
+  title.textContent = label;
+  detail.textContent = description;
+  link.append(title, detail);
+  return link;
+}
+
+function setupOfferingNavigation() {
+  document.querySelectorAll(".site-nav").forEach((nav) => {
+    if (nav.querySelector(".nav-offerings")) return;
+
+    const solutionsLink = Array.from(nav.children).find((item) => {
+      if (!item.matches("a")) return false;
+
+      try {
+        return new URL(item.href, window.location.href).hash === "#solutions";
+      } catch {
+        return false;
+      }
+    });
+
+    if (!solutionsLink) return;
+
+    const fromBlogArticle = window.location.pathname.includes("/blog/");
+    const prefix = fromBlogArticle ? "../" : "";
+    const menu = document.createElement("details");
+    const summary = document.createElement("summary");
+    const panel = document.createElement("div");
+
+    menu.className = "nav-offerings";
+    summary.textContent = "Our Offerings";
+    panel.className = "nav-offerings-menu";
+    panel.append(
+      createOfferingLink(`${prefix}index.html#solutions`, "Homes", "Rooftop solar for individual properties"),
+      createOfferingLink(`${prefix}housing-societies.html`, "Housing Societies", "Common-area solar for RWAs and apartments"),
+      createOfferingLink(`${prefix}commercial-solar.html`, "Commercial", "Solar planning for businesses and industry"),
+    );
+    menu.append(summary, panel);
+    solutionsLink.replaceWith(menu);
+
+    panel.querySelectorAll("a").forEach((link) => {
+      if (new URL(link.href, window.location.href).pathname === window.location.pathname) {
+        link.setAttribute("aria-current", "page");
+        menu.classList.add("is-current");
+      }
+
+      link.addEventListener("click", () => menu.removeAttribute("open"));
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    document.querySelectorAll(".nav-offerings[open]").forEach((menu) => {
+      if (!menu.contains(event.target)) menu.removeAttribute("open");
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    document.querySelectorAll(".nav-offerings[open]").forEach((menu) => menu.removeAttribute("open"));
+  });
+}
+
 function buildEstimateWhatsappMessage(formData, estimate, source) {
   const rows = [
     ["Source", source || "Solar Estimate"],
+    ["Project / Property", formData.get("societyName") || formData.get("businessName") || ""],
+    ["Contact Role", formData.get("contactRole") || ""],
+    ["Decision Stage", formData.get("decisionStage") || ""],
     ["Customer Type", formData.get("customerType") || ""],
     ["Property Type", formData.get("propertyType") || ""],
     ["Monthly Electricity Bill", formData.get("monthlyBill") || ""],
@@ -94,6 +164,7 @@ function buildEstimateWhatsappMessage(formData, estimate, source) {
   ];
 
   return `Hello Your Energy,\n\nI calculated my solar estimate on the website and want a final quote.\n\n${rows
+    .filter(([, value]) => String(value).trim())
     .map(([label, value]) => `${label}: ${value}`)
     .join("\n")}\n\nEstimate Note: ${estimate.note}`;
 }
@@ -189,9 +260,11 @@ function calculateSolarEstimate({ customerType, propertyType, monthlyBill, city 
     roof: `${roofArea} sq ft`,
     monthly: formatCurrency(monthlySavings),
     investment: `${formatCurrency(minCost)} - ${formatCurrency(maxCost)}`,
-    note: isCommercial
-      ? "Commercial estimates improve further after load profiling, operating-hour review, and roof-access planning."
-      : "Residential estimates improve further after roof direction, shade, and subsidy eligibility are confirmed.",
+    note: propertyType === "Apartment Society"
+      ? "Society estimates improve after common-area load analysis, roof assessment, AGM readiness, metering, and current subsidy rules are reviewed."
+      : isCommercial
+        ? "Commercial estimates improve further after load profiling, operating-hour review, and roof-access planning."
+        : "Residential estimates improve further after roof direction, shade, and subsidy eligibility are confirmed.",
   };
 }
 
@@ -203,6 +276,16 @@ function getEstimateFromForm(form) {
     monthlyBill: formData.get("monthlyBill") || "0",
     city: formData.get("city") || "",
   });
+  const projectName = formData.get("societyName") || formData.get("businessName") || "";
+  const context = [
+    projectName ? `Project: ${projectName}` : "",
+    formData.get("contactRole") ? `Contact role: ${formData.get("contactRole")}` : "",
+    formData.get("decisionStage") ? `Decision stage: ${formData.get("decisionStage")}` : "",
+  ].filter(Boolean);
+
+  if (context.length) {
+    estimate.note = `${estimate.note} ${context.join("; ")}.`;
+  }
 
   return { formData, estimate };
 }
@@ -273,7 +356,11 @@ function setupAssessmentFlow() {
         latestLeadId = leadId;
 
         const text = encodeURIComponent(
-          buildEstimateWhatsappMessage(latestFormData, latestEstimate, "Free Solar Assessment"),
+          buildEstimateWhatsappMessage(
+            latestFormData,
+            latestEstimate,
+            form.dataset.leadSource || "Free Solar Assessment",
+          ),
         );
         const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
 
@@ -297,6 +384,7 @@ function setupAssessmentFlow() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  setupOfferingNavigation();
   setupMobileMenu();
   setupAssessmentFlow();
 });

@@ -3089,3 +3089,520 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Offering navigation and dedicated service pages */
+.nav-offerings {
+  position: relative;
+}
+
+.nav-offerings > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+  list-style: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nav-offerings > summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-offerings > summary::after {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-top: -0.2rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.nav-offerings[open] > summary,
+.nav-offerings > summary:hover,
+.nav-offerings > summary:focus-visible,
+.nav-offerings.is-current > summary {
+  color: var(--brand);
+  background: rgba(118, 195, 0, 0.14);
+  outline: none;
+}
+
+.nav-offerings[open] > summary::after {
+  margin-top: 0.18rem;
+  transform: rotate(225deg);
+}
+
+.nav-offerings-menu {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  left: 50%;
+  z-index: 20;
+  display: grid;
+  width: min(330px, calc(100vw - 2rem));
+  padding: 0.55rem;
+  border: 1px solid rgba(8, 32, 63, 0.1);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 55px rgba(8, 32, 63, 0.18);
+  transform: translateX(-50%);
+}
+
+.site-nav .nav-offerings-menu a {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.78rem 0.9rem;
+  border-radius: 15px;
+  color: var(--ink);
+}
+
+.site-nav .nav-offerings-menu a:hover,
+.site-nav .nav-offerings-menu a:focus-visible,
+.site-nav .nav-offerings-menu a[aria-current="page"] {
+  background: #eff8e4;
+}
+
+.nav-offerings-menu strong {
+  font-size: 0.9rem;
+}
+
+.nav-offerings-menu span {
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.card-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  color: var(--accent-deep);
+  font-weight: 800;
+}
+
+.card-inline-link:hover,
+.card-inline-link:focus-visible {
+  color: var(--brand);
+}
+
+.offering-page {
+  background:
+    radial-gradient(circle at 8% 6%, rgba(118, 195, 0, 0.18), transparent 28rem),
+    radial-gradient(circle at 92% 13%, rgba(247, 197, 86, 0.25), transparent 30rem),
+    #f8f6ef;
+}
+
+.offering-hero {
+  position: relative;
+  padding: clamp(3.2rem, 7vw, 7.5rem) 0 clamp(4.5rem, 8vw, 7rem);
+  overflow: hidden;
+}
+
+.offering-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(380px, 0.78fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.offering-hero-copy {
+  padding-top: clamp(1rem, 4vw, 3.2rem);
+}
+
+.offering-hero-copy h1 {
+  max-width: 880px;
+  margin: 1.25rem 0 1.3rem;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: clamp(3.35rem, 6.7vw, 7.3rem);
+  line-height: 0.94;
+  letter-spacing: -0.065em;
+}
+
+.offering-hero-copy > p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(1.08rem, 1.5vw, 1.3rem);
+  line-height: 1.75;
+}
+
+.offering-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.offering-hero-points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  max-width: 880px;
+  margin-top: 2.4rem;
+}
+
+.offering-hero-points span {
+  min-height: 82px;
+  padding: 1rem;
+  border: 1px solid rgba(8, 32, 63, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--brand);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.offering-form-card {
+  position: relative;
+}
+
+.offering-form-card::before {
+  content: "";
+  position: absolute;
+  inset: -0.7rem 1.6rem auto;
+  z-index: -1;
+  height: 4rem;
+  border-radius: 24px;
+  background: var(--accent);
+  opacity: 0.24;
+}
+
+.offering-form-card .field-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.offering-form-card .field-wide {
+  grid-column: 1 / -1;
+}
+
+.offering-proof {
+  position: relative;
+  z-index: 2;
+  margin-top: -1.8rem;
+}
+
+.offering-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgba(8, 32, 63, 0.1);
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.offering-proof-grid article {
+  min-height: 150px;
+  padding: 1.5rem;
+  border-right: 1px solid rgba(8, 32, 63, 0.09);
+}
+
+.offering-proof-grid article:last-child {
+  border-right: 0;
+}
+
+.offering-proof-grid strong {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1.05rem;
+}
+
+.offering-proof-grid p,
+.offering-use-card p,
+.offering-model-card p,
+.offering-process-card p,
+.offering-check-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
+.offering-section {
+  padding: clamp(5rem, 9vw, 8.5rem) 0;
+}
+
+.offering-section-white {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.offering-section-dark {
+  position: relative;
+  color: var(--ink-invert);
+  background:
+    radial-gradient(circle at 85% 20%, rgba(118, 195, 0, 0.2), transparent 24rem),
+    linear-gradient(145deg, #07192f, #0c2b51);
+}
+
+.offering-section-head {
+  max-width: 940px;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+
+.offering-section-head h2,
+.offering-split-copy h2,
+.offering-cta h2 {
+  margin: 1rem 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: clamp(2.25rem, 4.3vw, 4.7rem);
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+}
+
+.offering-section-head p,
+.offering-split-copy > p {
+  max-width: 820px;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.offering-section-dark .offering-section-head p,
+.offering-section-dark .offering-process-card p {
+  color: rgba(238, 245, 255, 0.7);
+}
+
+.offering-use-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.offering-use-card,
+.offering-model-card,
+.offering-check-card {
+  padding: clamp(1.35rem, 2.3vw, 2rem);
+  border: 1px solid rgba(8, 32, 63, 0.1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 12px 34px rgba(8, 32, 63, 0.06);
+}
+
+.offering-card-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  margin-bottom: 1.35rem;
+  border-radius: 50%;
+  color: var(--brand);
+  background: var(--success);
+  font-size: 0.77rem;
+  font-weight: 800;
+}
+
+.offering-use-card h3,
+.offering-model-card h3,
+.offering-process-card h3,
+.offering-check-card h3 {
+  margin: 0 0 0.65rem;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1.18rem;
+}
+
+.offering-split {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.offering-split-copy {
+  position: sticky;
+  top: 9rem;
+}
+
+.offering-check-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.offering-check-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.offering-check-card .offering-card-number {
+  margin: 0;
+}
+
+.offering-model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.offering-model-card-featured {
+  color: var(--ink-invert);
+  background: var(--brand);
+}
+
+.offering-model-card-featured p {
+  color: rgba(238, 245, 255, 0.7);
+}
+
+.offering-process-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.offering-process-card {
+  min-height: 240px;
+  padding: 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.offering-process-card .offering-card-number {
+  color: #dfffad;
+  background: rgba(118, 195, 0, 0.18);
+}
+
+.offering-official-note {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.1rem;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid rgba(118, 195, 0, 0.26);
+  border-radius: 20px;
+  background: #f2f9e9;
+}
+
+.offering-official-note strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+}
+
+.offering-official-note p {
+  margin: 0.2rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.offering-official-note a {
+  color: var(--accent-deep);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.offering-cta-band {
+  padding: 0 0 clamp(5rem, 9vw, 8rem);
+}
+
+.offering-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(2rem, 4vw, 4rem);
+  border-radius: 34px;
+  color: var(--ink-invert);
+  background:
+    radial-gradient(circle at 90% 15%, rgba(118, 195, 0, 0.28), transparent 18rem),
+    var(--brand);
+  box-shadow: var(--shadow-lg);
+}
+
+.offering-cta h2 {
+  max-width: 780px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 1180px) {
+  .nav-offerings {
+    width: 100%;
+  }
+
+  .nav-offerings > summary {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .nav-offerings-menu {
+    position: static;
+    width: 100%;
+    margin-top: 0.35rem;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .site-nav .nav-offerings-menu a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .offering-hero-grid,
+  .offering-split {
+    grid-template-columns: 1fr;
+  }
+
+  .offering-hero-copy {
+    padding-top: 0;
+  }
+
+  .offering-split-copy {
+    position: static;
+  }
+
+  .offering-use-grid,
+  .offering-process-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .offering-hero {
+    padding-top: 2.2rem;
+  }
+
+  .offering-hero-copy h1 {
+    font-size: clamp(2.8rem, 14vw, 4.5rem);
+  }
+
+  .offering-hero-points,
+  .offering-proof-grid,
+  .offering-use-grid,
+  .offering-model-grid,
+  .offering-process-grid,
+  .offering-form-card .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .offering-proof-grid article {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(8, 32, 63, 0.09);
+  }
+
+  .offering-proof-grid article:last-child {
+    border-bottom: 0;
+  }
+
+  .offering-official-note,
+  .offering-cta {
+    align-items: flex-start;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .offering-hero-actions,
+  .offering-hero-actions .button,
+  .offering-cta .button {
+    width: 100%;
+  }
+}
