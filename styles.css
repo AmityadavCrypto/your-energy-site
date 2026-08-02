@@ -2689,6 +2689,16 @@ button {
   color: var(--ink-soft);
 }
 
+.blog-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.4rem;
+}
+
+.blog-load-more [hidden] {
+  display: none;
+}
+
 .blog-newsletter-band {
   padding: 0 0 clamp(5rem, 9vw, 9rem);
 }
@@ -3019,6 +3029,22 @@ button {
   color: var(--accent-deep);
   font-size: 0.9rem;
   font-weight: 800;
+}
+
+.article-related-links {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.article-related-links a {
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(8, 32, 63, 0.08);
+  line-height: 1.45;
+}
+
+.article-related-links a:first-child {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .article-aside-card .button {
