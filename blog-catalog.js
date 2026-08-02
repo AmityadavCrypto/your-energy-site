@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 34386)
-Total output lines: 2612
-
 window.YOUR_ENERGY_BLOG_CATALOG = [
   {
     "title": "Kutir Jyoti Yojana in Bihar for BPL Families: eligibility, process and verification",
@@ -943,7 +940,731 @@ window.YOUR_ENERGY_BLOG_CATALOG = [
     "number": "109"
   },
   {
-    "title": "4 kW Solar Panel Price in Gujarat With Subsidy explained:…9386 tokens truncated…ergy explains 4 kw solar panel pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "title": "4 kW Solar Panel Price in Gujarat With Subsidy explained: Subsidy and ROI Calculations Included",
+    "href": "blog/4-kw-solar-panel-price-in-gujarat-with-subsidy-explained-subsidy-and-roi-calculations-.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 4 kw solar panel price in gujarat with subsidy explained with practical checks for design, cost, approvals, documentation and long-term own",
+    "readTime": "5 min read",
+    "tone": "tone-mint",
+    "number": "110"
+  },
+  {
+    "title": "5 kW Solar Panel Price in Gujarat With Subsidy explained: ROI Calculations Included",
+    "href": "blog/5-kw-solar-panel-price-in-gujarat-with-subsidy-explained-roi-calculations-included.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 5 kw solar panel price in gujarat with subsidy explained with practical checks for design, cost, approvals, documentation and long-term own",
+    "readTime": "5 min read",
+    "tone": "tone-sun",
+    "number": "111"
+  },
+  {
+    "title": "Sub Metering explained: meaning, use cases and practical checks",
+    "href": "blog/sub-metering-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains sub metering explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-coral",
+    "number": "112"
+  },
+  {
+    "title": "Solar Net Metering explained: meaning, use cases and practical checks",
+    "href": "blog/solar-net-metering-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar net metering explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-blue",
+    "number": "113"
+  },
+  {
+    "title": "The Demand Factor explained: meaning, use cases and practical checks",
+    "href": "blog/the-demand-factor-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains the demand factor explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-forest",
+    "number": "114"
+  },
+  {
+    "title": "Can AC Run on Solar Power: planning guidance for homes",
+    "href": "blog/can-ac-run-on-solar-power-planning-guidance-for-homes.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains can ac run on solar power with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-violet",
+    "number": "115"
+  },
+  {
+    "title": "A Ground-Mounted Solar System explained: meaning, use cases and practical checks",
+    "href": "blog/a-ground-mounted-solar-system-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a ground-mounted solar system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-rose",
+    "number": "116"
+  },
+  {
+    "title": "A Hybrid Solar System explained: meaning, use cases and practical checks",
+    "href": "blog/a-hybrid-solar-system-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a hybrid solar system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-aqua",
+    "number": "117"
+  },
+  {
+    "title": "A Solar-Powered Fan explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-powered-fan-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar-powered fan explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-steel",
+    "number": "118"
+  },
+  {
+    "title": "1 MW Solar Power Plant in India explained: Cost, Specifications, and Profit Explained",
+    "href": "blog/1-mw-solar-power-plant-in-india-explained-cost-specifications-and-profit-explained.html",
+    "category": "Commercial Solar",
+    "categorySlug": "commercial",
+    "excerpt": "Your Energy explains 1 mw solar power plant in india explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-indigo",
+    "number": "119"
+  },
+  {
+    "title": "What Are Transparent Solar Panels: a business decision guide",
+    "href": "blog/what-are-transparent-solar-panels-a-business-decision-guide.html",
+    "category": "Commercial Solar",
+    "categorySlug": "commercial",
+    "excerpt": "Your Energy explains what are transparent solar panels with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-orange",
+    "number": "120"
+  },
+  {
+    "title": "What Are Solar Panel Electrical Connectors: a clear solar explanation",
+    "href": "blog/what-are-solar-panel-electrical-connectors-a-clear-solar-explanation.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains what are solar panel electrical connectors with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-lime",
+    "number": "121"
+  },
+  {
+    "title": "A Solar Cell Power Plant explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-cell-power-plant-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains a solar cell power plant explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sand",
+    "number": "122"
+  },
+  {
+    "title": "A practical route to Start a Solar Panel Business in India? Step-by-Step Guidance Offered",
+    "href": "blog/a-practical-route-to-start-a-solar-panel-business-in-india-step-by-step-guidance-offer.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a practical route to start a solar panel business in india? step-by-step guidance offered with practical checks for design, cost, approvals",
+    "readTime": "5 min read",
+    "tone": "tone-sky",
+    "number": "123"
+  },
+  {
+    "title": "The 100 kW Solar Panel System Price in India explained: meaning, use cases and practical checks",
+    "href": "blog/the-100-kw-solar-panel-system-price-in-india-explained-meaning-use-cases-and-practical.html",
+    "category": "Pricing & Cost",
+    "categorySlug": "pricing",
+    "excerpt": "Your Energy explains the 100 kw solar panel system price in india explained with practical checks for design, cost, approvals, documentation and long-term owner",
+    "readTime": "5 min read",
+    "tone": "tone-navy",
+    "number": "124"
+  },
+  {
+    "title": "The 50 kW Solar Panel System Price in India explained: meaning, use cases and practical checks",
+    "href": "blog/the-50-kw-solar-panel-system-price-in-india-explained-meaning-use-cases-and-practical-.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains the 50 kw solar panel system price in india explained with practical checks for design, cost, approvals, documentation and long-term owners",
+    "readTime": "5 min read",
+    "tone": "tone-mint",
+    "number": "125"
+  },
+  {
+    "title": "The 30 kW Solar Panel System Price in India explained: meaning, use cases and practical checks",
+    "href": "blog/the-30-kw-solar-panel-system-price-in-india-explained-meaning-use-cases-and-practical-.html",
+    "category": "Pricing & Cost",
+    "categorySlug": "pricing",
+    "excerpt": "Your Energy explains the 30 kw solar panel system price in india explained with practical checks for design, cost, approvals, documentation and long-term owners",
+    "readTime": "5 min read",
+    "tone": "tone-sun",
+    "number": "126"
+  },
+  {
+    "title": "A Smart Meter Reader explained: meaning, use cases and practical checks",
+    "href": "blog/a-smart-meter-reader-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a smart meter reader explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-coral",
+    "number": "127"
+  },
+  {
+    "title": "What Are Solar Radiation and Solar Flux: a clear solar explanation",
+    "href": "blog/what-are-solar-radiation-and-solar-flux-a-clear-solar-explanation.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains what are solar radiation and solar flux with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-blue",
+    "number": "128"
+  },
+  {
+    "title": "An Electrical Panel explained: meaning, use cases and practical checks",
+    "href": "blog/an-electrical-panel-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains an electrical panel explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-forest",
+    "number": "129"
+  },
+  {
+    "title": "A Rooftop Solar System explained: meaning, use cases and practical checks",
+    "href": "blog/a-rooftop-solar-system-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains a rooftop solar system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-violet",
+    "number": "130"
+  },
+  {
+    "title": "A Solar Energy Monitoring System explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-energy-monitoring-system-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar energy monitoring system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-rose",
+    "number": "131"
+  },
+  {
+    "title": "150Ah Solar Battery pricing in India: specifications, use cases and buying checks",
+    "href": "blog/150ah-solar-battery-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 150ah solar battery pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-aqua",
+    "number": "132"
+  },
+  {
+    "title": "Perovskite Solar Cell explained: a clear solar explanation",
+    "href": "blog/perovskite-solar-cell-explained-a-clear-solar-explanation.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains perovskite solar cell explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-steel",
+    "number": "133"
+  },
+  {
+    "title": "Solar Battery 200Ah price explained: What is a 200Ah solar battery",
+    "href": "blog/solar-battery-200ah-price-explained-what-is-a-200ah-solar-battery.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar battery 200ah price explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-indigo",
+    "number": "134"
+  },
+  {
+    "title": "Organic Photovoltaics explained: meaning, use cases and practical checks",
+    "href": "blog/organic-photovoltaics-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains organic photovoltaics explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-orange",
+    "number": "135"
+  },
+  {
+    "title": "What Are High-Efficiency Solar Cells: planning guidance for homes",
+    "href": "blog/what-are-high-efficiency-solar-cells-planning-guidance-for-homes.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains what are high-efficiency solar cells with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-lime",
+    "number": "136"
+  },
+  {
+    "title": "100-Watt Solar Panel Price Guide explained: Explore Types, Pros, Cons, and Working",
+    "href": "blog/100-watt-solar-panel-price-guide-explained-explore-types-pros-cons-and-working.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 100-watt solar panel price guide explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sand",
+    "number": "137"
+  },
+  {
+    "title": "20-Watt Solar Panel Guide explained: Price, Working, Types, Pros, Cons",
+    "href": "blog/20-watt-solar-panel-guide-explained-price-working-types-pros-cons.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 20-watt solar panel guide explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sky",
+    "number": "138"
+  },
+  {
+    "title": "10-Watt Solar Panel Guide explained: Price, Working, Types, Benefits, Cons",
+    "href": "blog/10-watt-solar-panel-guide-explained-price-working-types-benefits-cons.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 10-watt solar panel guide explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-navy",
+    "number": "139"
+  },
+  {
+    "title": "300-Watt Solar Panel Guide explained: Price, Types, Working, Benefits, Uses",
+    "href": "blog/300-watt-solar-panel-guide-explained-price-types-working-benefits-uses.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 300-watt solar panel guide explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-mint",
+    "number": "140"
+  },
+  {
+    "title": "200-Watt Solar Panel Guide explained: Discover Price, Types, Working, Benefits, Uses",
+    "href": "blog/200-watt-solar-panel-guide-explained-discover-price-types-working-benefits-uses.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 200-watt solar panel guide explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sun",
+    "number": "141"
+  },
+  {
+    "title": "Everything You Need to Know About a Hybrid 3 phase Solar Inverter: a clear explanation for solar buyers",
+    "href": "blog/everything-you-need-to-know-about-a-hybrid-3-phase-solar-inverter-a-clear-explanation-.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains everything you need to know about a hybrid 3 phase solar inverter with practical checks for design, cost, approvals, documentation and long",
+    "readTime": "5 min read",
+    "tone": "tone-coral",
+    "number": "142"
+  },
+  {
+    "title": "Solar Panel Efficiency explained: meaning, use cases and practical checks",
+    "href": "blog/solar-panel-efficiency-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar panel efficiency explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-blue",
+    "number": "143"
+  },
+  {
+    "title": "A practical route to Charge a Lithium Battery? Safety Considerations Included",
+    "href": "blog/a-practical-route-to-charge-a-lithium-battery-safety-considerations-included.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a practical route to charge a lithium battery? safety considerations included with practical checks for design, cost, approvals, documentat",
+    "readTime": "5 min read",
+    "tone": "tone-forest",
+    "number": "144"
+  },
+  {
+    "title": "Solar Panel Energy Conversion explained: meaning, use cases and practical checks",
+    "href": "blog/solar-panel-energy-conversion-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar panel energy conversion explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-violet",
+    "number": "145"
+  },
+  {
+    "title": "A Lithium Polymer Battery explained: meaning, use cases and practical checks",
+    "href": "blog/a-lithium-polymer-battery-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a lithium polymer battery explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-rose",
+    "number": "146"
+  },
+  {
+    "title": "A 2 KVA Solar Inverter and How Much Does it Cost in India explained: a clear solar explanation",
+    "href": "blog/a-2-kva-solar-inverter-and-how-much-does-it-cost-in-india-explained-a-clear-solar-expl.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a 2 kva solar inverter and how much does it cost in india explained with practical checks for design, cost, approvals, documentation and lo",
+    "readTime": "5 min read",
+    "tone": "tone-aqua",
+    "number": "147"
+  },
+  {
+    "title": "How to compare Solar Inverters in India: criteria beyond rankings",
+    "href": "blog/how-to-compare-solar-inverters-in-india-criteria-beyond-rankings.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains how to compare solar inverters in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-steel",
+    "number": "148"
+  },
+  {
+    "title": "A Solar Generator explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-generator-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar generator explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-indigo",
+    "number": "149"
+  },
+  {
+    "title": "What Are Solar Cell Chargers and How Do They Work?: a clear explanation for solar buyers",
+    "href": "blog/what-are-solar-cell-chargers-and-how-do-they-work-a-clear-explanation-for-solar-buyers.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains what are solar cell chargers and how do they work with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-orange",
+    "number": "150"
+  },
+  {
+    "title": "An MPPT Solar Charge Controller explained: meaning, use cases and practical checks",
+    "href": "blog/an-mppt-solar-charge-controller-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains an mppt solar charge controller explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-lime",
+    "number": "151"
+  },
+  {
+    "title": "A Solar-Powered Submersible Pump explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-powered-submersible-pump-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar-powered submersible pump explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sand",
+    "number": "152"
+  },
+  {
+    "title": "A Solar Pump explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-pump-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar pump explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sky",
+    "number": "153"
+  },
+  {
+    "title": "Top Uses of Solar Electricity and Solar Power Energy in India: a clear explanation for solar buyers",
+    "href": "blog/top-uses-of-solar-electricity-and-solar-power-energy-in-india-a-clear-explanation-for-.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains top uses of solar electricity and solar power energy in india with practical checks for design, cost, approvals, documentation and long-ter",
+    "readTime": "5 min read",
+    "tone": "tone-navy",
+    "number": "154"
+  },
+  {
+    "title": "A Solar Water Heater explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-water-heater-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar water heater explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-mint",
+    "number": "155"
+  },
+  {
+    "title": "Detailed Guide on the Working of Lithium Ion Prismatic Cell: a clear explanation for solar buyers",
+    "href": "blog/detailed-guide-on-the-working-of-lithium-ion-prismatic-cell-a-clear-explanation-for-so.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains detailed guide on the working of lithium ion prismatic cell with practical checks for design, cost, approvals, documentation and long-term ",
+    "readTime": "5 min read",
+    "tone": "tone-sun",
+    "number": "156"
+  },
+  {
+    "title": "Solar Renewable Energy explained: What is Green Solar Energy and How is it Used",
+    "href": "blog/solar-renewable-energy-explained-what-is-green-solar-energy-and-how-is-it-used.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar renewable energy explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-coral",
+    "number": "157"
+  },
+  {
+    "title": "Solar Air Cooler explained: Working Principle, Types, and Benefits Explained",
+    "href": "blog/solar-air-cooler-explained-working-principle-types-and-benefits-explained.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar air cooler explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-blue",
+    "number": "158"
+  },
+  {
+    "title": "BIPV - Building-Integrated Photovoltaics: a clear explanation for solar buyers",
+    "href": "blog/bipv-building-integrated-photovoltaics-a-clear-explanation-for-solar-buyers.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains bipv - building-integrated photovoltaics with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-forest",
+    "number": "159"
+  },
+  {
+    "title": "Solar Panel Charge Controller - Working, Types, and Installation: a business decision guide",
+    "href": "blog/solar-panel-charge-controller-working-types-and-installation-a-business-decision-guide.html",
+    "category": "Commercial Solar",
+    "categorySlug": "commercial",
+    "excerpt": "Your Energy explains solar panel charge controller - working, types, and installation with practical checks for design, cost, approvals, documentation and long-",
+    "readTime": "5 min read",
+    "tone": "tone-violet",
+    "number": "160"
+  },
+  {
+    "title": "Solar Subsidy in Rajasthan - Steps to Apply and Solar Prices After: planning guidance for homes",
+    "href": "blog/solar-subsidy-in-rajasthan-steps-to-apply-and-solar-prices-after-planning-guidance-for.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains solar subsidy in rajasthan - steps to apply and solar prices after with practical checks for design, cost, approvals, documentation and lon",
+    "readTime": "5 min read",
+    "tone": "tone-rose",
+    "number": "161"
+  },
+  {
+    "title": "Solar Panel Price in Uttar Pradesh With and Without a Subsidy in India: cost and buyer checks",
+    "href": "blog/solar-panel-price-in-uttar-pradesh-with-and-without-a-subsidy-in-india-cost-and-buyer-.html",
+    "category": "Pricing & Cost",
+    "categorySlug": "pricing",
+    "excerpt": "Your Energy explains solar panel price in uttar pradesh with and without a subsidy in india with practical checks for design, cost, approvals, documentation and",
+    "readTime": "5 min read",
+    "tone": "tone-aqua",
+    "number": "162"
+  },
+  {
+    "title": "Parabolic Trough Collector explained: Working, Advantages, and Limitations",
+    "href": "blog/parabolic-trough-collector-explained-working-advantages-and-limitations.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains parabolic trough collector explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-steel",
+    "number": "163"
+  },
+  {
+    "title": "Dual-Axis Solar Tracking System explained: Working, Advantages, and Limitations Explained",
+    "href": "blog/dual-axis-solar-tracking-system-explained-working-advantages-and-limitations-explained.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains dual-axis solar tracking system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-indigo",
+    "number": "164"
+  },
+  {
+    "title": "Solar Tracking System explained: Its Working, Types, Pros, and Cons",
+    "href": "blog/solar-tracking-system-explained-its-working-types-pros-and-cons.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains solar tracking system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-orange",
+    "number": "165"
+  },
+  {
+    "title": "How to compare Solar Panels in India: criteria beyond rankings",
+    "href": "blog/how-to-compare-solar-panels-in-india-criteria-beyond-rankings.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains how to compare solar panels in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-lime",
+    "number": "166"
+  },
+  {
+    "title": "A Flat Plate Collector explained: meaning, use cases and practical checks",
+    "href": "blog/a-flat-plate-collector-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Commercial Solar",
+    "categorySlug": "commercial",
+    "excerpt": "Your Energy explains a flat plate collector explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sand",
+    "number": "167"
+  },
+  {
+    "title": "Solar Subsidy in Maharashtra explained: eligibility, documents and application checks",
+    "href": "blog/solar-subsidy-in-maharashtra-explained-eligibility-documents-and-application-checks.html",
+    "category": "Subsidies & Schemes",
+    "categorySlug": "subsidy",
+    "excerpt": "Your Energy explains solar subsidy in maharashtra explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sky",
+    "number": "168"
+  },
+  {
+    "title": "10 kW Solar Panel pricing in India: specifications, use cases and buying checks",
+    "href": "blog/10-kw-solar-panel-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 10 kw solar panel pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-navy",
+    "number": "169"
+  },
+  {
+    "title": "Solar Panel Subsidy in India Under PM Surya Ghar Muft Bijli Yojana: planning guidance for Indian homes",
+    "href": "blog/solar-panel-subsidy-in-india-under-pm-surya-ghar-muft-bijli-yojana-planning-guidance-f.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains solar panel subsidy in india under pm surya ghar muft bijli yojana with practical checks for design, cost, approvals, documentation and lon",
+    "readTime": "5 min read",
+    "tone": "tone-mint",
+    "number": "170"
+  },
+  {
+    "title": "Bifacial Solar Panels explained: Price, Benefits, Limitations, Cost, and More!",
+    "href": "blog/bifacial-solar-panels-explained-price-benefits-limitations-cost-and-more.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains bifacial solar panels explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-sun",
+    "number": "171"
+  },
+  {
+    "title": "500 Watt Solar Panel pricing in India: specifications, use cases and buying checks",
+    "href": "blog/500-watt-solar-panel-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains 500 watt solar panel pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-coral",
+    "number": "172"
+  },
+  {
+    "title": "Solar Panel Installation Cost in India With and Without Subsidy: design, safety and handover checks",
+    "href": "blog/solar-panel-installation-cost-in-india-with-and-without-subsidy-design-safety-and-hand.html",
+    "category": "Installation",
+    "categorySlug": "installation",
+    "excerpt": "Your Energy explains solar panel installation cost in india with and without subsidy with practical checks for design, cost, approvals, documentation and long-t",
+    "readTime": "5 min read",
+    "tone": "tone-blue",
+    "number": "173"
+  },
+  {
+    "title": "3 kW Solar Panel System pricing in India: specifications, use cases and buying checks",
+    "href": "blog/3-kw-solar-panel-system-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Pricing & Cost",
+    "categorySlug": "pricing",
+    "excerpt": "Your Energy explains 3 kw solar panel system pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-forest",
+    "number": "174"
+  },
+  {
+    "title": "5 kW Solar System pricing in India: specifications, use cases and buying checks",
+    "href": "blog/5-kw-solar-system-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 5 kw solar system pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-violet",
+    "number": "175"
+  },
+  {
+    "title": "The 15 kW Solar System Price in India with Subsidy explained: meaning, use cases and practical checks",
+    "href": "blog/the-15-kw-solar-system-price-in-india-with-subsidy-explained-meaning-use-cases-and-pra.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains the 15 kw solar system price in india with subsidy explained with practical checks for design, cost, approvals, documentation and long-term",
+    "readTime": "5 min read",
+    "tone": "tone-rose",
+    "number": "176"
+  },
+  {
+    "title": "2 kW Solar Panel pricing in India: specifications, use cases and buying checks",
+    "href": "blog/2-kw-solar-panel-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 2 kw solar panel pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-aqua",
+    "number": "177"
+  },
+  {
+    "title": "A practical comparison of Uses of Solar Energy In Daily Life: criteria that matter",
+    "href": "blog/a-practical-comparison-of-uses-of-solar-energy-in-daily-life-criteria-that-matter.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a practical comparison of uses of solar energy in daily life with practical checks for design, cost, approvals, documentation and long-term",
+    "readTime": "5 min read",
+    "tone": "tone-steel",
+    "number": "178"
+  },
+  {
+    "title": "Grid Connected PV System explained: Components, Advantages, Disadvantages, & More",
+    "href": "blog/grid-connected-pv-system-explained-components-advantages-disadvantages-and-more.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains grid connected pv system explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-indigo",
+    "number": "179"
+  },
+  {
+    "title": "Monofacial Solar Panels and Bifacial Solar Panels: a clear solar explanation",
+    "href": "blog/monofacial-solar-panels-and-bifacial-solar-panels-a-clear-solar-explanation.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains monofacial solar panels and bifacial solar panels with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-orange",
+    "number": "180"
+  },
+  {
+    "title": "A Solar Greenhouse explained: meaning, use cases and practical checks",
+    "href": "blog/a-solar-greenhouse-explained-meaning-use-cases-and-practical-checks.html",
+    "category": "Solar Basics",
+    "categorySlug": "solar-basics",
+    "excerpt": "Your Energy explains a solar greenhouse explained with practical checks for design, cost, approvals, documentation and long-term ownership.",
+    "readTime": "5 min read",
+    "tone": "tone-lime",
+    "number": "181"
+  },
+  {
+    "title": "4 kW Solar Panel pricing in India: specifications, use cases and buying checks",
+    "href": "blog/4-kw-solar-panel-pricing-in-india-specifications-use-cases-and-buying-checks.html",
+    "category": "Residential Solar",
+    "categorySlug": "residential",
+    "excerpt": "Your Energy explains 4 kw solar panel pricing in india with practical checks for design, cost, approvals, documentation and long-term ownership.",
     "readTime": "5 min read",
     "tone": "tone-sand",
     "number": "182"
