@@ -3264,17 +3264,6 @@ button {
   position: relative;
 }
 
-.offering-form-card::before {
-  content: "";
-  position: absolute;
-  inset: -0.7rem 1.6rem auto;
-  z-index: -1;
-  height: 4rem;
-  border-radius: 24px;
-  background: var(--accent);
-  opacity: 0.24;
-}
-
 .offering-form-card .field-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
