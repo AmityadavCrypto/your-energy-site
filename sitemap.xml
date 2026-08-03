@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.yourenergy.co.in/</loc>
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-04</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -19,6 +19,31 @@
     <loc>https://www.yourenergy.co.in/commercial-solar.html</loc>
     <lastmod>2026-08-02</lastmod>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.yourenergy.co.in/locations/gurugram.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.yourenergy.co.in/locations/rewari.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.yourenergy.co.in/locations/kotputli.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.yourenergy.co.in/locations/sikar.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.yourenergy.co.in/locations/jaipur.html</loc>
+    <lastmod>2026-08-04</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.yourenergy.co.in/blog/pm-surya-ghar-subsidy-guide-2026.html</loc>
