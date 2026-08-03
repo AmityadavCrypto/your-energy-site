@@ -14,6 +14,11 @@ Copy everything from `schema.sql` into Supabase SQL Editor and run it. This crea
 - Row Level Security policies for authenticated admin users
 - Private `lead-documents` storage bucket for Aadhaar, PAN, passbook, electricity bill, and miscellaneous images
 
+For an existing Your Energy database, you can instead run
+`migrations/20260802_structured_lead_metadata.sql`. It adds the offering,
+business/society name, contact role, and decision stage columns and backfills
+those values for older leads wherever they are available in the estimate note.
+
 ## 3. Create admin login
 
 In Supabase, go to Authentication > Users and create your admin user email/password.

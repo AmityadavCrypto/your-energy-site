@@ -4,3 +4,5 @@ document-work/
 .env
 .env.*
 !supabase-config.example.js
+company-snapshot.*/
+full-snapshot.*/

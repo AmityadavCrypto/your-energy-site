@@ -30,6 +30,10 @@ function mapLeadToRow(lead) {
   return {
     client_lead_id: clientLeadId,
     status: cleanText(lead.status) || "Estimate Viewed",
+    lead_source: cleanText(lead.leadSource),
+    project_name: cleanText(lead.projectName),
+    contact_role: cleanText(lead.contactRole),
+    decision_stage: cleanText(lead.decisionStage),
     customer_type: cleanText(lead.customerType),
     property_type: cleanText(lead.propertyType),
     monthly_bill: cleanText(lead.monthlyBill),
@@ -42,6 +46,19 @@ function mapLeadToRow(lead) {
     investment: cleanText(lead.investment),
     note: cleanText(lead.note),
   };
+}
+
+function withoutStructuredMetadata(row) {
+  const { lead_source, project_name, contact_role, decision_stage, ...legacyRow } = row;
+  return legacyRow;
+}
+
+function isMissingMetadataColumnError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  const mentionsMetadata = ["lead_source", "project_name", "contact_role", "decision_stage"].some((column) =>
+    message.includes(column),
+  );
+  return mentionsMetadata && (message.includes("column") || message.includes("schema cache"));
 }
 
 async function supabaseRequest(path, options = {}) {
@@ -77,6 +94,23 @@ async function supabaseRequest(path, options = {}) {
   return data;
 }
 
+async function saveLeadRow(row, existing) {
+  return existing?.length
+    ? supabaseRequest(`/leads?id=eq.${existing[0].id}`, {
+        method: "PATCH",
+        body: JSON.stringify(row),
+      })
+    : supabaseRequest("/leads", {
+        method: "POST",
+        body: JSON.stringify({
+          ...row,
+          application_status: "Application Applied",
+          documents: {},
+          quotation: {},
+        }),
+      });
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return response(204, {});
@@ -105,20 +139,15 @@ exports.handler = async (event) => {
       action: isUpdate ? "update" : "insert",
     });
 
-    const savedRows = isUpdate
-      ? await supabaseRequest(`/leads?id=eq.${existing[0].id}`, {
-          method: "PATCH",
-          body: JSON.stringify(row),
-        })
-      : await supabaseRequest("/leads", {
-          method: "POST",
-          body: JSON.stringify({
-            ...row,
-            application_status: "Application Applied",
-            documents: {},
-            quotation: {},
-          }),
-        });
+    let savedRows;
+    try {
+      savedRows = await saveLeadRow(row, existing);
+    } catch (error) {
+      if (!isMissingMetadataColumnError(error)) throw error;
+
+      console.warn("[lead-upsert] structured lead columns are not migrated yet; using legacy storage");
+      savedRows = await saveLeadRow(withoutStructuredMetadata(row), existing);
+    }
 
     const saved = savedRows?.[0];
     console.log("[lead-upsert] saved", {

@@ -145,12 +145,24 @@ function setupOfferingNavigation() {
   });
 }
 
+function getAssessmentContext(formData, source) {
+  return {
+    leadSource: String(source || "Homes").trim(),
+    projectName: String(
+      formData.get("projectName") || formData.get("societyName") || formData.get("businessName") || "",
+    ).trim(),
+    contactRole: String(formData.get("contactRole") || "").trim(),
+    decisionStage: String(formData.get("decisionStage") || "").trim(),
+  };
+}
+
 function buildEstimateWhatsappMessage(formData, estimate, source) {
+  const context = getAssessmentContext(formData, source);
   const rows = [
-    ["Source", source || "Solar Estimate"],
-    ["Project / Property", formData.get("societyName") || formData.get("businessName") || ""],
-    ["Contact Role", formData.get("contactRole") || ""],
-    ["Decision Stage", formData.get("decisionStage") || ""],
+    ["Offering", context.leadSource],
+    ["Business / Society", context.projectName],
+    ["Contact Role", context.contactRole],
+    ["Decision Stage", context.decisionStage],
     ["Customer Type", formData.get("customerType") || ""],
     ["Property Type", formData.get("propertyType") || ""],
     ["Monthly Electricity Bill", formData.get("monthlyBill") || ""],
@@ -190,15 +202,20 @@ function createLeadId() {
   return `lead-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-async function saveAssessmentLead(formData, estimate, status, leadId) {
+async function saveAssessmentLead(formData, estimate, status, leadId, source) {
   const leads = readAssessmentLeads();
   const now = new Date().toISOString();
   const id = leadId || createLeadId();
+  const context = getAssessmentContext(formData, source);
   const lead = {
     id,
     createdAt: now,
     updatedAt: now,
     status,
+    leadSource: context.leadSource,
+    projectName: context.projectName,
+    contactRole: context.contactRole,
+    decisionStage: context.decisionStage,
     customerType: formData.get("customerType") || "",
     propertyType: formData.get("propertyType") || "",
     monthlyBill: formData.get("monthlyBill") || "",
@@ -276,11 +293,11 @@ function getEstimateFromForm(form) {
     monthlyBill: formData.get("monthlyBill") || "0",
     city: formData.get("city") || "",
   });
-  const projectName = formData.get("societyName") || formData.get("businessName") || "";
+  const contextDetails = getAssessmentContext(formData, form.dataset.leadSource || "Homes");
   const context = [
-    projectName ? `Project: ${projectName}` : "",
-    formData.get("contactRole") ? `Contact role: ${formData.get("contactRole")}` : "",
-    formData.get("decisionStage") ? `Decision stage: ${formData.get("decisionStage")}` : "",
+    contextDetails.projectName ? `Project: ${contextDetails.projectName}` : "",
+    contextDetails.contactRole ? `Contact role: ${contextDetails.contactRole}` : "",
+    contextDetails.decisionStage ? `Decision stage: ${contextDetails.decisionStage}` : "",
   ].filter(Boolean);
 
   if (context.length) {
@@ -321,7 +338,13 @@ function setupAssessmentFlow() {
       setButtonLoading(submitButton, true, "Saving Estimate...");
       setSyncStatus(syncStatus, "Saving your estimate details...", "pending");
 
-      const { leadId, syncResult } = await saveAssessmentLead(formData, estimate, "Estimate Viewed", latestLeadId);
+      const { leadId, syncResult } = await saveAssessmentLead(
+        formData,
+        estimate,
+        "Estimate Viewed",
+        latestLeadId,
+        form.dataset.leadSource || "Homes",
+      );
       latestLeadId = leadId;
       setButtonLoading(submitButton, false);
 
@@ -352,6 +375,7 @@ function setupAssessmentFlow() {
           estimate,
           "WhatsApp Quote Requested",
           latestLeadId,
+          form.dataset.leadSource || "Homes",
         );
         latestLeadId = leadId;
 

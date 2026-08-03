@@ -23,7 +23,11 @@ const CSV_COLUMNS = [
   ["createdAt", "Date"],
   ["status", "Lead Status"],
   ["applicationStatus", "Application Status"],
-  ["name", "Name"],
+  ["leadSource", "Offering"],
+  ["projectName", "Business / Society"],
+  ["contactRole", "Contact Role"],
+  ["decisionStage", "Decision Stage"],
+  ["name", "Contact Name"],
   ["phone", "Phone"],
   ["customerType", "Customer Type"],
   ["propertyType", "Property Type"],
@@ -96,6 +100,10 @@ function dbRowToLead(row) {
     updatedAt: row.updated_at,
     status: row.status,
     applicationStatus: row.application_status,
+    leadSource: row.lead_source,
+    projectName: row.project_name,
+    contactRole: row.contact_role,
+    decisionStage: row.decision_stage,
     customerType: row.customer_type,
     propertyType: row.property_type,
     monthlyBill: row.monthly_bill,
@@ -116,6 +124,10 @@ function leadToDbPatch(lead) {
   return {
     status: lead.status || "Estimate Viewed",
     application_status: lead.applicationStatus || "Application Applied",
+    lead_source: lead.leadSource || "",
+    project_name: lead.projectName || "",
+    contact_role: lead.contactRole || "",
+    decision_stage: lead.decisionStage || "",
     customer_type: lead.customerType || "",
     property_type: lead.propertyType || "",
     monthly_bill: lead.monthlyBill || "",
@@ -130,6 +142,19 @@ function leadToDbPatch(lead) {
     documents: lead.documents || {},
     quotation: lead.quotation || {},
   };
+}
+
+function leadToLegacyDbPatch(lead) {
+  const { lead_source, project_name, contact_role, decision_stage, ...legacyPatch } = leadToDbPatch(lead);
+  return legacyPatch;
+}
+
+function isMissingMetadataColumnError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  const mentionsMetadata = ["lead_source", "project_name", "contact_role", "decision_stage"].some((column) =>
+    message.includes(column),
+  );
+  return mentionsMetadata && (message.includes("column") || message.includes("schema cache"));
 }
 
 function readLeads() {
@@ -164,9 +189,38 @@ function tryWriteLeads(leads) {
   }
 }
 
+function readLegacyNoteValue(note, label) {
+  const text = String(note || "");
+  const marker = `${label}:`;
+  const markerIndex = text.toLowerCase().indexOf(marker.toLowerCase());
+  if (markerIndex < 0) return "";
+
+  const valueStart = markerIndex + marker.length;
+  const remainder = text.slice(valueStart);
+  const separatorIndex = remainder.indexOf(";");
+  const value = separatorIndex >= 0 ? remainder.slice(0, separatorIndex) : remainder;
+  return value.trim().replace(/[.\s]+$/, "");
+}
+
+function getLeadSource(lead, projectName) {
+  const source = String(lead.leadSource || "").trim().toLowerCase();
+  if (source.includes("housing") || source.includes("society")) return "Housing Society";
+  if (source.includes("commercial") || source.includes("business")) return "Commercial";
+  if (source) return "Homes";
+  if (lead.propertyType === "Apartment Society" && projectName) return "Housing Society";
+  if (lead.customerType === "Commercial" && projectName) return "Commercial";
+  return "Homes";
+}
+
 function normalizeLead(lead) {
+  const projectName = String(lead.projectName || readLegacyNoteValue(lead.note, "Project")).trim();
+
   return {
     ...lead,
+    leadSource: getLeadSource(lead, projectName),
+    projectName,
+    contactRole: String(lead.contactRole || readLegacyNoteValue(lead.note, "Contact role")).trim(),
+    decisionStage: String(lead.decisionStage || readLegacyNoteValue(lead.note, "Decision stage")).trim(),
     applicationStatus: lead.applicationStatus || "Application Applied",
     documents: lead.documents || {},
     quotation: lead.quotation || {},
@@ -200,12 +254,23 @@ async function updateLead(leadId, updater) {
   leads[index] = updatedLead;
 
   if (isRemoteMode) {
-    const { data, error } = await supabaseClient
+    let result = await supabaseClient
       .from("leads")
       .update(leadToDbPatch(updatedLead))
       .eq("id", leadId)
       .select()
       .single();
+
+    if (result.error && isMissingMetadataColumnError(result.error)) {
+      result = await supabaseClient
+        .from("leads")
+        .update(leadToLegacyDbPatch(updatedLead))
+        .eq("id", leadId)
+        .select()
+        .single();
+    }
+
+    const { data, error } = result;
 
     if (error) {
       window.alert(`Could not save this lead to Supabase: ${error.message}`);
@@ -278,9 +343,10 @@ function renderRows(leads) {
         <tr>
           <td>${escapeHtml(formatDate(lead.createdAt))}</td>
           <td><span class="status-pill">${escapeHtml(lead.applicationStatus)}</span></td>
+          <td>${escapeHtml(lead.leadSource || "-")}</td>
+          <td>${escapeHtml(lead.projectName || "-")}</td>
           <td>${escapeHtml(lead.name || "-")}</td>
           <td>${escapeHtml(lead.phone || "-")}</td>
-          <td>${escapeHtml(lead.customerType || "-")}</td>
           <td>${escapeHtml(lead.propertyType || "-")}</td>
           <td>${escapeHtml(lead.monthlyBill || "-")}</td>
           <td>${escapeHtml(lead.city || "-")}</td>
@@ -323,8 +389,11 @@ function renderLeadDetail(lead, shouldScroll = true) {
 
   selectedLeadId = lead.id;
   panel.hidden = false;
-  setText("[data-detail-title]", lead.name || "Unnamed Lead");
-  setText("[data-detail-subtitle]", `${lead.phone || "No phone"} - ${lead.city || "No city"} - ${formatDate(lead.createdAt)}`);
+  setText("[data-detail-title]", lead.projectName || lead.name || "Unnamed Lead");
+  setText(
+    "[data-detail-subtitle]",
+    `${lead.projectName ? `Contact: ${lead.name || "Not provided"} - ` : ""}${lead.phone || "No phone"} - ${lead.city || "No city"} - ${formatDate(lead.createdAt)}`,
+  );
 
   renderDetailSummary(lead);
   renderStatusControls(lead);
@@ -340,6 +409,11 @@ function renderDetailSummary(lead) {
 
   const rows = [
     ["Lead Status", lead.status],
+    ["Offering", lead.leadSource],
+    ["Business / Society", lead.projectName],
+    ["Contact Person", lead.name],
+    ["Contact Role", lead.contactRole],
+    ["Decision Stage", lead.decisionStage],
     ["Customer Type", lead.customerType],
     ["Property Type", lead.propertyType],
     ["Monthly Bill", lead.monthlyBill],
@@ -347,6 +421,7 @@ function renderDetailSummary(lead) {
     ["Estimated System", lead.estimatedSystem],
     ["Estimated Savings", lead.monthlySavings],
     ["Investment Range", lead.investment],
+    ["Estimate Note", lead.note],
   ];
 
   summary.innerHTML = rows
@@ -626,7 +701,7 @@ function renderQuotationPreview(lead) {
     <div class="quote-preview-head">
       <div>
         <span>Quotation Preview</span>
-        <strong>${escapeHtml(lead.name || "Customer")}</strong>
+        <strong>${escapeHtml(lead.projectName || lead.name || "Customer")}</strong>
       </div>
       <strong>${formatCurrency(totals.total)}</strong>
     </div>
@@ -701,7 +776,8 @@ function buildQuotationDocumentHtml(lead) {
   const markUrl = getAssetUrl("assets/your-energy-mark.png");
 
   const customerRows = [
-    ["Customer Name", lead.name || "-"],
+    ["Contact Name", lead.name || "-"],
+    ...(lead.projectName ? [["Business / Society", lead.projectName]] : []),
     ["Phone Number", lead.phone || "-"],
     ["Project Location", lead.city || "-"],
     ["Project Type", projectType],
@@ -782,7 +858,7 @@ function buildQuotationDocumentHtml(lead) {
       <section class="quote-hero-strip">
         <div>
           <span>Customer</span>
-          <strong>${escapeHtml(lead.name || "-")}</strong>
+          <strong>${escapeHtml(lead.projectName || lead.name || "-")}</strong>
         </div>
         <div>
           <span>System</span>
