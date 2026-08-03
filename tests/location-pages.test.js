@@ -83,14 +83,41 @@ test("every official office has a complete, unique location page", () => {
   });
 });
 
-test("homepage and sitemap expose all five official location pages", () => {
+test("office directory and sitemap expose all five official location pages", () => {
   const homepage = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const directory = fs.readFileSync(path.join(root, "locations", "index.html"), "utf8");
   const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
 
+  assert.ok(homepage.includes('href="locations/"'), "Homepage does not link to the office directory");
+  assert.ok(directory.includes('rel="canonical" href="https://www.yourenergy.co.in/locations/"'));
+  assert.ok(sitemap.includes("https://www.yourenergy.co.in/locations/"), "Sitemap does not include the office directory");
+
   locations.forEach(({ slug, city }) => {
-    assert.ok(homepage.includes(`href="locations/${slug}.html"`), `Homepage does not link to ${city}`);
+    assert.ok(directory.includes(`href="${slug}.html"`), `Office directory does not link to ${city}`);
     assert.ok(sitemap.includes(`https://www.yourenergy.co.in/locations/${slug}.html`), `Sitemap does not include ${city}`);
   });
+
+  const schema = readStructuredData(directory);
+  assert.equal(schema["@type"], "CollectionPage");
+  assert.equal(schema.mainEntity["@type"], "ItemList");
+  assert.equal(schema.mainEntity.numberOfItems, 5);
+  assert.equal(schema.mainEntity.itemListElement.length, 5);
+});
+
+test("homepage company section highlights only Gurugram, Kotputli, and Sikar", () => {
+  const homepage = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const match = homepage.match(/Company &amp; Offices<\/strong>([\s\S]*?)<div class="footer-contact-tools">/);
+
+  assert.ok(match, "Homepage company and offices section is missing");
+  const officeBlock = match[1];
+
+  ["gurugram", "kotputli", "sikar"].forEach((slug) => {
+    assert.ok(officeBlock.includes(`href="locations/${slug}.html"`), `${slug} is missing from the homepage office block`);
+  });
+  ["rewari", "jaipur"].forEach((slug) => {
+    assert.ok(!officeBlock.includes(`href="locations/${slug}.html"`), `${slug} should only appear in the office directory`);
+  });
+  assert.ok(officeBlock.includes('href="locations/"'), "Homepage office block is missing the all-offices link");
 });
 
 test("Rewari and Behror spellings remain correct", () => {
