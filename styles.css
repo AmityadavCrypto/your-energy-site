@@ -3201,7 +3201,7 @@ button {
 
 .offering-hero {
   position: relative;
-  padding: clamp(3.2rem, 7vw, 7.5rem) 0 clamp(4.5rem, 8vw, 7rem);
+  padding: clamp(1.75rem, 3vw, 3rem) 0 clamp(4.5rem, 8vw, 7rem);
   overflow: hidden;
 }
 
@@ -3214,7 +3214,7 @@ button {
 
 .offering-hero-copy {
   max-width: 820px;
-  padding-top: clamp(1rem, 4vw, 3.2rem);
+  padding-top: clamp(0.5rem, 1.4vw, 1.5rem);
 }
 
 .offering-hero-copy h1 {
