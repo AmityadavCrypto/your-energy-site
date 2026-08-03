@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 4173",
-    "check": "node --check script.js && node --check blog.js && node --check admin.js && node --check netlify/functions/lead-upsert.js"
+    "check": "node --check script.js && node --check blog.js && node --check admin-lead-utils.js && node --check admin-lead-repository.js && node --check admin.js && node --check netlify/functions/lead-upsert.js",
+    "test": "node --test tests/*.test.js"
   }
 }
