@@ -126,6 +126,6 @@ test("Rewari and Behror spellings remain correct", () => {
 
   assert.ok(rewari.includes("Kund-Behror Road"));
   assert.ok(!rewari.includes("Kund-Behror Road, near Madona Beauty Parlour, near Om Villa Marriage Garden, Behror"));
-  assert.ok(homepage.includes("<li>Behror</li>"));
+  assert.ok(homepage.includes('<li><a href="service-areas/behror.html">Behror</a></li>'));
   assert.ok(!homepage.includes("Bheror"));
 });
