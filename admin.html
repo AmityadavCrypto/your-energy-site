@@ -8,11 +8,13 @@
   <link rel="icon" href="/favicon.ico?v=20260803-exact-logo" sizes="any">
   <link rel="icon" href="/assets/favicon.svg?v=20260803-exact-logo" sizes="any" type="image/svg+xml">
   <link rel="icon" href="/assets/favicon-96.png?v=20260803-exact-logo" sizes="96x96" type="image/png">
-  <link rel="stylesheet" href="styles.css?v=20260803-structured-leads">
+  <link rel="stylesheet" href="styles.css?v=20260804-lead-management">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20260728-quotation-pdf"></script>
   <script src="quotation-brand-assets.js?v=20260728-quotation-pdf-v6"></script>
-  <script src="admin.js?v=20260803-structured-leads" defer></script>
+  <script src="admin-lead-utils.js?v=20260804-lead-management" defer></script>
+  <script src="admin-lead-repository.js?v=20260804-lead-management" defer></script>
+  <script src="admin.js?v=20260804-lead-management" defer></script>
   <script src="admin-gst-mode.js?v=20260730-branch-addresses" defer></script>
 </head>
 <body class="admin-page">
@@ -120,6 +122,45 @@
         </div>
       </div>
 
+      <form class="admin-lead-filters" data-lead-filters>
+        <label class="field admin-lead-search">
+          <span>Search Leads</span>
+          <input type="search" placeholder="Name, phone, business, society, city..." autocomplete="off" data-lead-search>
+        </label>
+        <label class="field">
+          <span>Offering</span>
+          <select data-lead-offering>
+            <option value="all">All Offerings</option>
+            <option value="Homes">Homes</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Housing Society">Housing Society</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Application Stage</span>
+          <select data-lead-stage-filter>
+            <option value="all">All Stages</option>
+            <option value="Application Applied">Application Applied</option>
+            <option value="Payment Received / Loan Passed">Payment Received / Loan Passed</option>
+            <option value="Electricity Board Approval">Electricity Board Approval</option>
+            <option value="Installation At Site Done">Installation At Site Done</option>
+            <option value="Subsidy Received">Subsidy Received</option>
+            <option value="Project Completed">Project Completed</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Sort By</span>
+          <select data-lead-sort>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="updated">Recently Updated</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </label>
+        <button class="button button-secondary" type="reset">Reset Filters</button>
+        <p class="admin-filter-summary" data-filter-summary aria-live="polite">Showing all leads.</p>
+      </form>
+
       <div class="admin-table-wrap">
         <table class="admin-table">
           <thead>
@@ -155,7 +196,13 @@
           <h2 data-detail-title>Select a lead</h2>
           <p data-detail-subtitle>Open a lead to manage documents, status, and quotation.</p>
         </div>
-        <button class="button button-secondary" type="button" data-close-detail>Close</button>
+        <div class="lead-detail-actions">
+          <a class="button button-secondary" href="#" data-lead-call hidden>Call</a>
+          <a class="button button-secondary" href="#" target="_blank" rel="noopener noreferrer" data-lead-whatsapp hidden>WhatsApp</a>
+          <button class="button button-secondary" type="button" data-edit-selected-lead>Edit Lead</button>
+          <button class="button button-danger" type="button" data-delete-selected-lead>Delete Lead</button>
+          <button class="button button-secondary" type="button" data-close-detail>Close</button>
+        </div>
       </div>
 
       <div class="lead-detail-grid">
@@ -373,5 +420,120 @@
       </div>
     </section>
   </main>
+
+  <dialog class="admin-edit-dialog" data-edit-lead-dialog>
+    <form class="admin-edit-form" data-edit-lead-form novalidate>
+      <div class="admin-edit-head">
+        <div>
+          <span class="eyebrow">Edit Lead</span>
+          <h2>Update customer details</h2>
+          <p>Changes are saved to the same lead record and become visible immediately.</p>
+        </div>
+        <button class="dialog-close" type="button" aria-label="Close edit lead dialog" data-close-edit-lead>&times;</button>
+      </div>
+
+      <div class="admin-edit-grid">
+        <label class="field">
+          <span>Offering</span>
+          <select name="leadSource">
+            <option value="Homes">Homes</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Housing Society">Housing Society</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Lead Status</span>
+          <select name="status">
+            <option value="Estimate Viewed">Estimate Viewed</option>
+            <option value="WhatsApp Quote Requested">WhatsApp Quote Requested</option>
+            <option value="Contacted">Contacted</option>
+            <option value="Qualified">Qualified</option>
+            <option value="Not Interested">Not Interested</option>
+            <option value="Converted">Converted</option>
+          </select>
+        </label>
+        <label class="field field-wide">
+          <span>Application Status</span>
+          <select name="applicationStatus">
+            <option value="Application Applied">Application Applied</option>
+            <option value="Payment Received / Loan Passed">Payment Received / Loan Passed</option>
+            <option value="Electricity Board Approval">Electricity Board Approval</option>
+            <option value="Installation At Site Done">Installation At Site Done</option>
+            <option value="Subsidy Received">Subsidy Received</option>
+            <option value="Project Completed">Project Completed</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Contact Name *</span>
+          <input type="text" name="name" autocomplete="name" required>
+          <small class="field-error" data-edit-error="name"></small>
+        </label>
+        <label class="field">
+          <span>Phone Number *</span>
+          <input type="tel" name="phone" autocomplete="tel" required>
+          <small class="field-error" data-edit-error="phone"></small>
+        </label>
+        <label class="field">
+          <span>Business / Society Name</span>
+          <input type="text" name="projectName">
+        </label>
+        <label class="field">
+          <span>Contact Role</span>
+          <input type="text" name="contactRole" placeholder="Owner, secretary, facility manager...">
+        </label>
+        <label class="field">
+          <span>Decision Stage</span>
+          <input type="text" name="decisionStage" placeholder="Exploring, comparing, ready to proceed...">
+        </label>
+        <label class="field">
+          <span>Customer Type</span>
+          <select name="customerType">
+            <option value="Residential">Residential</option>
+            <option value="Commercial">Commercial</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Property Type</span>
+          <input type="text" name="propertyType">
+        </label>
+        <label class="field">
+          <span>Monthly Electricity Bill</span>
+          <input type="text" name="monthlyBill" inputmode="numeric">
+        </label>
+        <label class="field">
+          <span>City / State</span>
+          <input type="text" name="city">
+        </label>
+        <label class="field">
+          <span>Estimated System</span>
+          <input type="text" name="estimatedSystem">
+        </label>
+        <label class="field">
+          <span>Roof Area</span>
+          <input type="text" name="roofArea">
+        </label>
+        <label class="field">
+          <span>Estimated Monthly Savings</span>
+          <input type="text" name="monthlySavings">
+        </label>
+        <label class="field">
+          <span>Investment Range</span>
+          <input type="text" name="investment">
+        </label>
+        <label class="field field-wide">
+          <span>Internal Notes / Estimate Note</span>
+          <textarea name="note" rows="4" placeholder="Add follow-up notes, customer requirements, or estimate context"></textarea>
+        </label>
+      </div>
+
+      <p class="admin-edit-status" data-edit-lead-status role="alert"></p>
+      <div class="admin-edit-actions">
+        <button class="button button-secondary" type="button" data-cancel-edit-lead>Cancel</button>
+        <button class="button button-primary" type="submit" data-save-lead-changes>Save Changes</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="admin-toast-region" data-admin-toast-region aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
