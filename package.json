@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 4173",
-    "check": "node --check script.js && node --check blog.js && node --check admin-lead-utils.js && node --check admin-lead-repository.js && node --check admin.js && node --check netlify/functions/lead-upsert.js",
-    "test": "node --test tests/*.test.js"
+    "check": "node --check script.js && node --check blog.js && node --check admin-lead-utils.js && node --check admin-lead-repository.js && node --check admin.js && node --check netlify/functions/lead-upsert.js && node --check scripts/generate-service-area-pages.js",
+    "test": "node --test tests/*.test.js",
+    "generate:service-areas": "node scripts/generate-service-area-pages.js"
   }
 }
