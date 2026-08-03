@@ -19,6 +19,26 @@ const DOCUMENT_TYPES = [
   ["miscellaneous", "Miscellaneous Image"],
 ];
 
+const EDITABLE_LEAD_FIELDS = [
+  "leadSource",
+  "status",
+  "applicationStatus",
+  "name",
+  "phone",
+  "projectName",
+  "contactRole",
+  "decisionStage",
+  "customerType",
+  "propertyType",
+  "monthlyBill",
+  "city",
+  "estimatedSystem",
+  "roofArea",
+  "monthlySavings",
+  "investment",
+  "note",
+];
+
 const CSV_COLUMNS = [
   ["createdAt", "Date"],
   ["status", "Lead Status"],
@@ -42,12 +62,26 @@ const CSV_COLUMNS = [
 
 const DOCUMENT_BUCKET = "lead-documents";
 const SUPABASE_PLACEHOLDER = "YOUR_PROJECT_ID";
+const ADMIN_LEAD_UTILS = window.YourEnergyAdminLeadUtils;
+const ADMIN_LEAD_REPOSITORY = window.YourEnergyAdminLeadRepository;
+
+if (!ADMIN_LEAD_UTILS || !ADMIN_LEAD_REPOSITORY) {
+  throw new Error("Admin lead management modules failed to load.");
+}
 
 let selectedLeadId = null;
+let editingLeadId = null;
 let supabaseClient = null;
 let isRemoteMode = false;
 let isAdminSignedIn = false;
 let leadCache = [];
+let adminToastTimer = null;
+let leadViewState = {
+  search: "",
+  offering: "all",
+  applicationStatus: "all",
+  sort: "newest",
+};
 
 function getSupabaseConfig() {
   const config = window.YourEnergySupabaseConfig || {};
@@ -230,18 +264,23 @@ function normalizeLead(lead) {
 async function fetchRemoteLeads() {
   if (!supabaseClient || !isAdminSignedIn) return [];
 
-  const { data, error } = await supabaseClient
-    .from("leads")
-    .select("*")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabaseClient
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    window.alert(`Could not load leads from Supabase: ${error.message}`);
+    if (error) {
+      window.alert(`Could not load leads from Supabase: ${error.message}`);
+      return readLeads();
+    }
+
+    leadCache = (data || []).map(dbRowToLead);
+    return leadCache;
+  } catch (error) {
+    window.alert(`Could not connect to Supabase: ${error.message || "Unknown network error"}`);
     return readLeads();
   }
-
-  leadCache = (data || []).map(dbRowToLead);
-  return leadCache;
 }
 
 async function updateLead(leadId, updater) {
@@ -254,32 +293,37 @@ async function updateLead(leadId, updater) {
   leads[index] = updatedLead;
 
   if (isRemoteMode) {
-    let result = await supabaseClient
-      .from("leads")
-      .update(leadToDbPatch(updatedLead))
-      .eq("id", leadId)
-      .select()
-      .single();
-
-    if (result.error && isMissingMetadataColumnError(result.error)) {
-      result = await supabaseClient
+    try {
+      let result = await supabaseClient
         .from("leads")
-        .update(leadToLegacyDbPatch(updatedLead))
+        .update(leadToDbPatch(updatedLead))
         .eq("id", leadId)
         .select()
         .single();
-    }
 
-    const { data, error } = result;
+      if (result.error && isMissingMetadataColumnError(result.error)) {
+        result = await supabaseClient
+          .from("leads")
+          .update(leadToLegacyDbPatch(updatedLead))
+          .eq("id", leadId)
+          .select()
+          .single();
+      }
 
-    if (error) {
-      window.alert(`Could not save this lead to Supabase: ${error.message}`);
+      const { data, error } = result;
+
+      if (error) {
+        window.alert(`Could not save this lead to Supabase: ${error.message}`);
+        return null;
+      }
+
+      const savedLead = dbRowToLead(data);
+      leadCache[index] = savedLead;
+      return savedLead;
+    } catch (error) {
+      window.alert(`Could not connect to Supabase: ${error.message || "Unknown network error"}`);
       return null;
     }
-
-    const savedLead = dbRowToLead(data);
-    leadCache[index] = savedLead;
-    return savedLead;
   }
 
   return tryWriteLeads(leads) ? updatedLead : null;
@@ -321,6 +365,36 @@ function setText(selector, value) {
   if (element) element.textContent = value;
 }
 
+function showAdminToast(message, tone = "success") {
+  const region = document.querySelector("[data-admin-toast-region]");
+  if (!region) return;
+
+  window.clearTimeout(adminToastTimer);
+  region.innerHTML = `<div class="admin-toast admin-toast-${escapeHtml(tone)}">${escapeHtml(message)}</div>`;
+  adminToastTimer = window.setTimeout(() => {
+    region.innerHTML = "";
+  }, 4200);
+}
+
+function setButtonBusy(button, isBusy, busyText = "Working...") {
+  if (!button) return;
+
+  if (isBusy) {
+    button.dataset.originalText = button.textContent;
+    button.textContent = busyText;
+    button.disabled = true;
+    return;
+  }
+
+  button.textContent = button.dataset.originalText || button.textContent;
+  button.disabled = false;
+  delete button.dataset.originalText;
+}
+
+function getVisibleLeads(leads = readLeads()) {
+  return ADMIN_LEAD_UTILS.filterAndSortLeads(leads, leadViewState);
+}
+
 function renderStats(leads) {
   const quoteRequests = leads.filter((lead) => lead.status === "WhatsApp Quote Requested").length;
   const residential = leads.filter((lead) => lead.customerType === "Residential").length;
@@ -332,7 +406,7 @@ function renderStats(leads) {
   setText('[data-stat="commercial"]', commercial);
 }
 
-function renderRows(leads) {
+function renderRows(leads, totalLeadCount) {
   const rows = document.querySelector("[data-lead-rows]");
   const emptyState = document.querySelector("[data-empty-state]");
   if (!rows || !emptyState) return;
@@ -353,13 +427,63 @@ function renderRows(leads) {
           <td>${escapeHtml(lead.estimatedSystem || "-")}</td>
           <td>${escapeHtml(lead.monthlySavings || "-")}</td>
           <td>${escapeHtml(lead.investment || "-")}</td>
-          <td><button class="mini-action" type="button" data-open-lead="${escapeHtml(lead.id)}">Open</button></td>
+          <td>
+            <div class="admin-row-actions">
+              <button class="mini-action" type="button" data-open-lead="${escapeHtml(lead.id)}">Open</button>
+              <button class="mini-action" type="button" data-edit-lead="${escapeHtml(lead.id)}">Edit</button>
+              <button class="mini-action mini-action-danger" type="button" data-delete-lead="${escapeHtml(lead.id)}">Delete</button>
+            </div>
+          </td>
         </tr>
       `,
     )
     .join("");
 
   emptyState.hidden = leads.length > 0;
+  const emptyTitle = emptyState.querySelector("strong");
+  const emptyMessage = emptyState.querySelector("span");
+  if (!leads.length && totalLeadCount > 0) {
+    if (emptyTitle) emptyTitle.textContent = "No leads match these filters";
+    if (emptyMessage) emptyMessage.textContent = "Change or reset the search and filters to see other records.";
+  } else {
+    if (emptyTitle) emptyTitle.textContent = "No assessment leads yet";
+    if (emptyMessage) {
+      emptyMessage.textContent =
+        "Submit the Free Solar Assessment form on the website, then return here to see the saved entry.";
+    }
+  }
+}
+
+function renderFilterSummary(visibleCount, totalCount) {
+  const summary = document.querySelector("[data-filter-summary]");
+  if (!summary) return;
+
+  if (visibleCount === totalCount) {
+    summary.textContent = `Showing all ${totalCount} lead${totalCount === 1 ? "" : "s"}.`;
+    return;
+  }
+
+  summary.textContent = `Showing ${visibleCount} of ${totalCount} leads.`;
+}
+
+function syncLeadViewState() {
+  leadViewState = {
+    search: String(document.querySelector("[data-lead-search]")?.value || ""),
+    offering: String(document.querySelector("[data-lead-offering]")?.value || "all"),
+    applicationStatus: String(document.querySelector("[data-lead-stage-filter]")?.value || "all"),
+    sort: String(document.querySelector("[data-lead-sort]")?.value || "newest"),
+  };
+  renderLeads();
+}
+
+function resetLeadViewState() {
+  leadViewState = {
+    search: "",
+    offering: "all",
+    applicationStatus: "all",
+    sort: "newest",
+  };
+  window.setTimeout(renderLeads, 0);
 }
 
 function renderLastUpdated(leads) {
@@ -373,8 +497,10 @@ function renderLastUpdated(leads) {
 
 function renderLeads() {
   const leads = readLeads();
+  const visibleLeads = getVisibleLeads(leads);
   renderStats(leads);
-  renderRows(leads);
+  renderRows(visibleLeads, leads.length);
+  renderFilterSummary(visibleLeads.length, leads.length);
   renderLastUpdated(leads);
 
   if (selectedLeadId) {
@@ -397,6 +523,7 @@ function renderLeadDetail(lead, shouldScroll = true) {
 
   renderDetailSummary(lead);
   renderStatusControls(lead);
+  renderLeadContactActions(lead);
   renderDocumentGrid(lead);
   populateQuotationForm(lead);
   renderQuotationPreview(lead);
@@ -422,11 +549,32 @@ function renderDetailSummary(lead) {
     ["Estimated Savings", lead.monthlySavings],
     ["Investment Range", lead.investment],
     ["Estimate Note", lead.note],
+    ["Created", formatDate(lead.createdAt)],
+    ["Last Updated", formatDate(lead.updatedAt || lead.createdAt)],
   ];
 
   summary.innerHTML = rows
     .map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "-")}</dd></div>`)
     .join("");
+}
+
+function renderLeadContactActions(lead) {
+  const callLink = document.querySelector("[data-lead-call]");
+  const whatsappLink = document.querySelector("[data-lead-whatsapp]");
+  const phone = String(lead.phone || "").trim();
+  const whatsappPhone = normalizePhoneNumber(phone);
+
+  if (callLink) {
+    callLink.hidden = !phone;
+    callLink.href = phone ? `tel:${phone.replace(/[^\d+]/g, "")}` : "#";
+  }
+
+  if (whatsappLink) {
+    whatsappLink.hidden = !whatsappPhone;
+    whatsappLink.href = whatsappPhone
+      ? `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(`Hello ${lead.name || ""}, this is Your Energy regarding your solar enquiry.`)}`
+      : "#";
+  }
 }
 
 function renderStatusControls(lead) {
@@ -602,6 +750,166 @@ async function removeDocument(key) {
   });
 
   if (updatedLead) renderLeads();
+}
+
+function clearEditLeadErrors() {
+  document.querySelectorAll("[data-edit-error]").forEach((element) => {
+    element.textContent = "";
+  });
+  document.querySelectorAll("[data-edit-lead-form] [aria-invalid='true']").forEach((element) => {
+    element.removeAttribute("aria-invalid");
+  });
+  setText("[data-edit-lead-status]", "");
+}
+
+function setEditFormValue(form, fieldName, value) {
+  const control = form.elements.namedItem(fieldName);
+  if (!control) return;
+
+  const nextValue = String(value ?? "");
+  if (control.tagName === "SELECT" && nextValue && !Array.from(control.options).some((option) => option.value === nextValue)) {
+    control.add(new Option(nextValue, nextValue));
+  }
+  control.value = nextValue;
+}
+
+function openEditLead(lead) {
+  const dialog = document.querySelector("[data-edit-lead-dialog]");
+  const form = document.querySelector("[data-edit-lead-form]");
+  if (!dialog || !form || !lead) return;
+
+  editingLeadId = lead.id;
+  clearEditLeadErrors();
+  EDITABLE_LEAD_FIELDS.forEach((fieldName) => setEditFormValue(form, fieldName, lead[fieldName]));
+
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    dialog.setAttribute("open", "");
+  }
+
+  window.requestAnimationFrame(() => form.elements.namedItem("name")?.focus());
+}
+
+function closeEditLeadDialog() {
+  const dialog = document.querySelector("[data-edit-lead-dialog]");
+  editingLeadId = null;
+  clearEditLeadErrors();
+
+  if (!dialog) return;
+  if (typeof dialog.close === "function" && dialog.open) {
+    dialog.close();
+  } else {
+    dialog.removeAttribute("open");
+  }
+}
+
+function renderEditLeadErrors(errors) {
+  Object.entries(errors).forEach(([fieldName, message]) => {
+    const errorElement = document.querySelector(`[data-edit-error="${fieldName}"]`);
+    const control = document.querySelector(`[data-edit-lead-form] [name="${fieldName}"]`);
+    if (errorElement) errorElement.textContent = message;
+    if (control) control.setAttribute("aria-invalid", "true");
+  });
+
+  const firstInvalidControl = document.querySelector("[data-edit-lead-form] [aria-invalid='true']");
+  firstInvalidControl?.focus();
+}
+
+async function handleEditLeadSubmit(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const saveButton = form.querySelector("[data-save-lead-changes]");
+  const lead = readLeads().find((item) => item.id === editingLeadId);
+  if (!lead) {
+    setText("[data-edit-lead-status]", "This lead is no longer available. Refresh the dashboard and try again.");
+    return;
+  }
+
+  clearEditLeadErrors();
+  const formData = new FormData(form);
+  const draftValues = Object.fromEntries(
+    EDITABLE_LEAD_FIELDS.map((fieldName) => [fieldName, String(formData.get(fieldName) || "").trim()]),
+  );
+  const validation = ADMIN_LEAD_UTILS.validateLeadInput(draftValues);
+
+  if (!validation.isValid) {
+    renderEditLeadErrors(validation.errors);
+    setText("[data-edit-lead-status]", "Please correct the highlighted fields.");
+    return;
+  }
+
+  let updatedLead = null;
+  setButtonBusy(saveButton, true, "Saving...");
+  try {
+    updatedLead = await updateLead(lead.id, (currentLead) => ({
+      ...currentLead,
+      ...validation.value,
+    }));
+  } finally {
+    setButtonBusy(saveButton, false);
+  }
+
+  if (!updatedLead) {
+    setText("[data-edit-lead-status]", "The lead could not be saved. Please try again.");
+    return;
+  }
+
+  selectedLeadId = updatedLead.id;
+  closeEditLeadDialog();
+  renderLeads();
+  showAdminToast("Lead details updated successfully.");
+}
+
+async function deleteLead(leadId, triggerButton = null) {
+  const leads = readLeads();
+  const lead = leads.find((item) => item.id === leadId);
+  if (!lead) {
+    showAdminToast("This lead is no longer available.", "error");
+    return false;
+  }
+
+  const leadLabel = lead.projectName || lead.name || "this lead";
+  const shouldDelete = window.confirm(
+    `Permanently delete ${leadLabel}? This removes the lead and its uploaded documents. This action cannot be undone.`,
+  );
+  if (!shouldDelete) return false;
+
+  setButtonBusy(triggerButton, true, "Deleting...");
+  let cleanupWarning = "";
+
+  try {
+    if (isRemoteMode) {
+      if (!supabaseClient || !isAdminSignedIn) {
+        throw new Error("Your admin session has expired. Sign in again before deleting a lead.");
+      }
+
+      const documentPaths = ADMIN_LEAD_UTILS.getDocumentPaths(lead);
+      const deletion = await ADMIN_LEAD_REPOSITORY.deleteRemoteLead(supabaseClient, {
+        leadId,
+        bucket: DOCUMENT_BUCKET,
+        documentPaths,
+      });
+      leadCache = ADMIN_LEAD_UTILS.removeLeadById(leadCache, leadId);
+      if (deletion.cleanupError) {
+        cleanupWarning = " The lead was deleted, but some stored documents may need manual cleanup.";
+      }
+    } else {
+      const remainingLeads = ADMIN_LEAD_UTILS.removeLeadById(leads, leadId);
+      if (!tryWriteLeads(remainingLeads)) return false;
+    }
+
+    if (editingLeadId === leadId) closeEditLeadDialog();
+    if (selectedLeadId === leadId) closeDetailPanel();
+    renderLeads();
+    showAdminToast(`Lead deleted successfully.${cleanupWarning}`, cleanupWarning ? "warning" : "success");
+    return true;
+  } catch (error) {
+    window.alert(`Could not delete this lead: ${error.message}`);
+    return false;
+  } finally {
+    setButtonBusy(triggerButton, false);
+  }
 }
 
 function getQuotationDefaults(lead) {
@@ -1232,8 +1540,11 @@ function csvValue(value) {
 }
 
 function exportLeads() {
-  const leads = readLeads();
-  if (!leads.length) return;
+  const leads = getVisibleLeads();
+  if (!leads.length) {
+    showAdminToast("There are no visible leads to export.", "warning");
+    return;
+  }
 
   const header = CSV_COLUMNS.map(([, label]) => csvValue(label)).join(",");
   const rows = leads.map((lead) =>
@@ -1246,6 +1557,7 @@ function exportLeads() {
   link.download = `your-energy-leads-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
+  showAdminToast(`Exported ${leads.length} lead${leads.length === 1 ? "" : "s"} to CSV.`);
 }
 
 function clearLeads() {
@@ -1264,14 +1576,23 @@ function clearLeads() {
   selectedLeadId = null;
   document.querySelector("[data-lead-detail]").hidden = true;
   renderLeads();
+  showAdminToast("Local demo leads cleared.");
 }
 
-async function refreshLeads() {
-  if (isRemoteMode && isAdminSignedIn) {
-    await fetchRemoteLeads();
-  }
+async function refreshLeads(event) {
+  const button = event?.currentTarget || null;
+  setButtonBusy(button, true, "Refreshing...");
 
-  renderLeads();
+  try {
+    if (isRemoteMode && isAdminSignedIn) {
+      await fetchRemoteLeads();
+    }
+
+    renderLeads();
+    if (button) showAdminToast("Lead records refreshed.");
+  } finally {
+    setButtonBusy(button, false);
+  }
 }
 
 async function handleAdminLogin(event) {
@@ -1371,6 +1692,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.querySelector("[data-export-leads]")?.addEventListener("click", exportLeads);
   document.querySelector("[data-clear-leads]")?.addEventListener("click", clearLeads);
   document.querySelector("[data-close-detail]")?.addEventListener("click", closeDetailPanel);
+  document.querySelector("[data-lead-search]")?.addEventListener("input", syncLeadViewState);
+  document.querySelector("[data-lead-filters]")?.addEventListener("change", syncLeadViewState);
+  document.querySelector("[data-lead-filters]")?.addEventListener("reset", resetLeadViewState);
+  document.querySelector("[data-edit-lead-form]")?.addEventListener("submit", handleEditLeadSubmit);
+  document.querySelector("[data-close-edit-lead]")?.addEventListener("click", closeEditLeadDialog);
+  document.querySelector("[data-cancel-edit-lead]")?.addEventListener("click", closeEditLeadDialog);
+  document.querySelector("[data-edit-selected-lead]")?.addEventListener("click", () => {
+    const lead = getSelectedLead();
+    if (lead) openEditLead(lead);
+  });
+  document.querySelector("[data-delete-selected-lead]")?.addEventListener("click", (event) => {
+    const lead = getSelectedLead();
+    if (lead) deleteLead(lead.id, event.currentTarget);
+  });
   document.querySelector("[data-admin-login-form]")?.addEventListener("submit", handleAdminLogin);
   document.querySelector("[data-admin-sign-out]")?.addEventListener("click", handleAdminSignOut);
   document.querySelector("[data-save-quotation]")?.addEventListener("click", () => {
@@ -1394,15 +1729,36 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lead = getSelectedLead();
     if (!lead) return;
 
-    const updatedLead = await updateLead(lead.id, (draft) => ({
-      ...draft,
-      applicationStatus: event.target.value,
-    }));
-    if (updatedLead) renderLeads();
+    event.target.disabled = true;
+    try {
+      const updatedLead = await updateLead(lead.id, (draft) => ({
+        ...draft,
+        applicationStatus: event.target.value,
+      }));
+      if (updatedLead) {
+        renderLeads();
+        showAdminToast("Application status updated.");
+      } else {
+        event.target.value = lead.applicationStatus;
+        showAdminToast("Application status was not changed.", "error");
+      }
+    } finally {
+      event.target.disabled = false;
+    }
   });
 
-  document.addEventListener("click", (event) => {
+  document.querySelector("[data-edit-lead-dialog]")?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) closeEditLeadDialog();
+  });
+  document.querySelector("[data-edit-lead-dialog]")?.addEventListener("close", () => {
+    editingLeadId = null;
+    clearEditLeadErrors();
+  });
+
+  document.addEventListener("click", async (event) => {
     const openButton = event.target.closest("[data-open-lead]");
+    const editButton = event.target.closest("[data-edit-lead]");
+    const deleteButton = event.target.closest("[data-delete-lead]");
     const removeButton = event.target.closest("[data-remove-document]");
     const downloadButton = event.target.closest("[data-download-document]");
 
@@ -1411,8 +1767,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (lead) renderLeadDetail(lead);
     }
 
+    if (editButton) {
+      const lead = readLeads().find((item) => item.id === editButton.dataset.editLead);
+      if (lead) openEditLead(lead);
+    }
+
+    if (deleteButton) {
+      await deleteLead(deleteButton.dataset.deleteLead, deleteButton);
+    }
+
     if (removeButton) {
-      removeDocument(removeButton.dataset.removeDocument);
+      await removeDocument(removeButton.dataset.removeDocument);
     }
 
     if (downloadButton) {
