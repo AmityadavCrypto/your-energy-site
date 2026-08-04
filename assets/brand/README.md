@@ -20,7 +20,8 @@ Recommended usage:
   Use for compact placements on dark backgrounds.
 
 - `../favicon.svg`
-  Use as the main modern favicon source.
+  Use as the single vector master for every favicon export. It recreates the
+  switch-shaped `O` with clean geometry instead of embedding a raster crop.
 
 Raster exports generated from these masters:
 
