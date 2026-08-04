@@ -5,7 +5,7 @@
   "scripts": {
     "start": "python3 -m http.server 4173",
     "generate:service-areas": "node scripts/generate-service-area-pages.js",
-    "check": "node --check script.js && node --check blog.js && node --check admin-lead-utils.js && node --check admin-lead-repository.js && node --check admin.js && node --check netlify/functions/lead-upsert.js && node --check scripts/generate-service-area-pages.js",
+    "check": "node --check script.js && node --check blog.js && node --check quotation-brand-assets.js && node --check quotation-pdf-download.js && node --check admin-lead-utils.js && node --check admin-lead-repository.js && node --check admin.js && node --check admin-gst-mode.js && node --check netlify/functions/lead-upsert.js && node --check scripts/generate-service-area-pages.js",
     "test": "node --test tests/*.test.js"
   }
 }

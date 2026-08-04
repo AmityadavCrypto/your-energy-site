@@ -1251,12 +1251,13 @@ function buildQuotationDocumentHtml(lead) {
 function buildQuotationPrintStyles() {
   return `
     @page { size: A4; margin: 14mm; }
-    * {
+    .quotation-pdf-stage,
+    .quotation-pdf-stage * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    body {
+    .quotation-pdf-stage {
       margin: 0;
       background: #edf4e8;
       color: #0b2242;
@@ -1386,20 +1387,20 @@ function buildQuotationPrintStyles() {
       background: #f1f7eb;
       border-radius: 10px;
     }
-    table {
+    .quotation-pdf-stage table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
       margin-top: 8px;
     }
-    th,
-    td {
+    .quotation-pdf-stage th,
+    .quotation-pdf-stage td {
       border: 1px solid #b7c7ad;
       padding: 8.5px 10px;
       vertical-align: middle;
       overflow-wrap: anywhere;
     }
-    th {
+    .quotation-pdf-stage th {
       background: #e6f1dd;
       color: #08203f;
       font-weight: 700;
@@ -1469,7 +1470,7 @@ function buildQuotationPrintStyles() {
       font-weight: 800;
     }
     @media print {
-      body { background: #ffffff; }
+      .quotation-pdf-stage { background: #ffffff; }
       .quotation-document {
         max-width: none;
         margin: 0;
@@ -1485,29 +1486,47 @@ function buildQuotationPrintStyles() {
   `;
 }
 
-async function printQuotation() {
-  const lead = await saveQuotation();
-  if (!lead) return;
-
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    window.alert("Please allow popups to generate the quotation PDF.");
-    return;
+async function downloadQuotationFile(lead, assets = {}) {
+  const pdfDownload = window.QuotationPdfDownload;
+  if (!pdfDownload) {
+    throw new Error("The PDF generator did not load. Refresh the page and try again.");
   }
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
-        <style>${buildQuotationPrintStyles()}</style>
-      </head>
-      <body>${buildQuotationDocumentHtml(lead)}</body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
+  const customerName = lead.projectName || lead.name || "Customer";
+  return pdfDownload.downloadHtml({
+    documentRef: document,
+    filename: pdfDownload.buildFilename(lead),
+    html: buildQuotationDocumentHtml(lead, assets),
+    html2pdfFactory: window.html2pdf,
+    styles: buildQuotationPrintStyles(),
+    title: `Solar Quotation - ${customerName}`,
+  });
+}
+
+async function printQuotation() {
+  const downloadButton = document.querySelector("[data-print-quotation]");
+  const originalLabel = downloadButton?.textContent || "Download PDF";
+
+  if (downloadButton) {
+    downloadButton.disabled = true;
+    downloadButton.textContent = "Preparing PDF...";
+  }
+
+  try {
+    const lead = await saveQuotation();
+    if (!lead) return;
+
+    const filename = await downloadQuotationFile(lead);
+    showAdminToast(`${filename} downloaded.`, "success");
+  } catch (error) {
+    console.error("Quotation PDF download failed", error);
+    showAdminToast(error.message || "The quotation PDF could not be downloaded.", "error");
+  } finally {
+    if (downloadButton) {
+      downloadButton.disabled = false;
+      downloadButton.textContent = originalLabel;
+    }
+  }
 }
 
 function normalizePhoneNumber(phone) {

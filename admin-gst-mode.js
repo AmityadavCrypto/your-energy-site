@@ -302,47 +302,43 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
   `;
 };
 
-printQuotation = async function printQuotationWithAssetWait() {
-  const lead = await saveQuotation();
-  if (!lead) return;
+printQuotation = async function downloadQuotationWithEmbeddedAssets() {
+  const downloadButton = document.querySelector("[data-print-quotation]");
+  const originalLabel = downloadButton?.textContent || "Download PDF";
 
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    window.alert("Please allow popups to generate the quotation PDF.");
-    return;
+  if (downloadButton) {
+    downloadButton.disabled = true;
+    downloadButton.textContent = "Preparing PDF...";
   }
 
-  const { fullLogoSrc, markSrc } = await getQuotationPrintAssets();
+  try {
+    const lead = await saveQuotation();
+    if (!lead) return;
 
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Solar Quotation - ${escapeHtml(lead.name || "Customer")}</title>
-        <style>${buildQuotationPrintStyles()}</style>
-      </head>
-      <body>${buildQuotationDocumentHtml(lead, {
-        fullLogoSrc,
-        markSrc,
-      })}</body>
-    </html>
-  `);
-  printWindow.document.close();
-
-  await waitForPrintDocumentReady(printWindow);
-  printWindow.focus();
-  printWindow.print();
+    const assets = await getQuotationPrintAssets();
+    const filename = await downloadQuotationFile(lead, assets);
+    showAdminToast(`${filename} downloaded.`, "success");
+  } catch (error) {
+    console.error("Quotation PDF download failed", error);
+    showAdminToast(error.message || "The quotation PDF could not be downloaded.", "error");
+  } finally {
+    if (downloadButton) {
+      downloadButton.disabled = false;
+      downloadButton.textContent = originalLabel;
+    }
+  }
 };
 
 buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
   return `
     @page { size: A4; margin: 14mm; }
-    * {
+    .quotation-pdf-stage,
+    .quotation-pdf-stage * {
       box-sizing: border-box;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    body {
+    .quotation-pdf-stage {
       margin: 0;
       background: #edf4e8;
       color: #0b2242;
@@ -491,28 +487,28 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       break-after: avoid;
       page-break-after: avoid;
     }
-    table {
+    .quotation-pdf-stage table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
       margin-top: 8px;
     }
-    thead {
+    .quotation-pdf-stage thead {
       display: table-header-group;
     }
-    tr,
-    .quote-note {
+    .quotation-pdf-stage tr,
+    .quotation-pdf-stage .quote-note {
       break-inside: avoid;
       page-break-inside: avoid;
     }
-    th,
-    td {
+    .quotation-pdf-stage th,
+    .quotation-pdf-stage td {
       border: 1px solid #b7c7ad;
       padding: 8.5px 10px;
       vertical-align: middle;
       overflow-wrap: anywhere;
     }
-    th {
+    .quotation-pdf-stage th {
       background: #e6f1dd;
       color: #08203f;
       font-weight: 700;
@@ -577,7 +573,7 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
       font-weight: 800;
     }
     @media print {
-      body { background: #ffffff; }
+      .quotation-pdf-stage { background: #ffffff; }
       .quotation-document {
         max-width: none;
         margin: 0;
