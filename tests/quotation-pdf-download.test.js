@@ -150,3 +150,16 @@ test("admin download button uses the PDF engine without opening a print tab", ()
   );
   assert.doesNotMatch(activeDownloadOverride, /window\.open|\.print\(/);
 });
+
+test("quotation uses the fixed HDFC company banking details", () => {
+  const adminHtml = fs.readFileSync(path.join(root, "admin.html"), "utf8");
+  const adminJs = fs.readFileSync(path.join(root, "admin.js"), "utf8");
+  const gstModeJs = fs.readFileSync(path.join(root, "admin-gst-mode.js"), "utf8");
+  const quotationSource = `${adminHtml}\n${adminJs}\n${gstModeJs}`;
+
+  assert.match(quotationSource, /FlyingApes Technologies Private Limited/);
+  assert.match(quotationSource, /50200115046842/);
+  assert.match(quotationSource, /HDFC0002128/);
+  assert.doesNotMatch(quotationSource, /7201002100001497|PUNB0720100/);
+  assert.match(gstModeJs, /<h2>Banking Details<\/h2>/);
+});

@@ -182,6 +182,12 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
     ["6", "Transportation", "Transportation of the above-mentioned material up to the installation site is included."],
   ];
 
+  const bankingRows = [
+    ["Name", COMPANY_BANKING_DETAILS.name],
+    ["Account number", COMPANY_BANKING_DETAILS.accountNumber],
+    ["IFSC Code", COMPANY_BANKING_DETAILS.ifscCode],
+  ];
+
   const scopeItems = [
     "Cleaning of solar modules shall be in the client's scope.",
     "Roof access, electricity and water shall be provided by the client during construction.",
@@ -267,6 +273,11 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
           <thead><tr><th>Sr.</th><th>Term</th><th>Condition</th></tr></thead>
           <tbody>${buildDataRows(termRows)}</tbody>
         </table>
+      </section>
+
+      <section class="quote-section banking-section">
+        <h2>Banking Details</h2>
+        <table class="kv-table"><tbody>${buildRows(bankingRows)}</tbody></table>
       </section>
 
       <section class="quote-section">
@@ -546,6 +557,10 @@ buildQuotationPrintStyles = function buildQuotationPrintStylesWithGstMode() {
     }
     .scope-list li {
       margin: 5px 0;
+    }
+    .banking-section {
+      break-inside: avoid;
+      page-break-inside: avoid;
     }
     .closing-signoff {
       width: 44%;

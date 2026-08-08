@@ -1,6 +1,12 @@
 const LEAD_STORAGE_KEY = "yourEnergyAssessmentLeads";
 const WHATSAPP_COUNTRY_CODE = "91";
 const MAX_DOCUMENT_SIZE = 1.5 * 1024 * 1024;
+const COMPANY_BANKING_DETAILS = Object.freeze({
+  name: "FlyingApes Technologies Private Limited",
+  accountNumber: "50200115046842",
+  ifscCode: "HDFC0002128",
+  summary: "Name: FlyingApes Technologies Private Limited, Account number: 50200115046842, IFSC Code: HDFC0002128",
+});
 
 const APPLICATION_STATUSES = [
   "Application Applied",
@@ -946,7 +952,7 @@ function getQuotationDefaults(lead) {
     systemWarranty: "5 years complete system warranty",
     moduleWarranty: "25 years solar module performance warranty",
     inverterWarranty: "10 years inverter warranty as per manufacturer norms",
-    bankDetails: "A/C Name: FLYINGAPES TECHNOLOGIES PRIVATE LIMITED, A/C No.: 7201002100001497, IFSC: PUNB0720100",
+    bankDetails: COMPANY_BANKING_DETAILS.summary,
     remarks: "Final pricing may change after site verification, shadow analysis, and approval requirements.",
   };
 }
@@ -955,7 +961,11 @@ function populateQuotationForm(lead) {
   const form = document.querySelector("[data-quotation-form]");
   if (!form) return;
 
-  const values = { ...getQuotationDefaults(lead), ...lead.quotation };
+  const values = {
+    ...getQuotationDefaults(lead),
+    ...lead.quotation,
+    bankDetails: COMPANY_BANKING_DETAILS.summary,
+  };
   Array.from(form.elements).forEach((field) => {
     if (!field.name || field.type === "button") return;
     field.value = values[field.name] ?? "";
@@ -967,7 +977,10 @@ function collectQuotationData() {
   if (!form) return {};
 
   const formData = new FormData(form);
-  return Object.fromEntries(formData.entries());
+  return {
+    ...Object.fromEntries(formData.entries()),
+    bankDetails: COMPANY_BANKING_DETAILS.summary,
+  };
 }
 
 function calculateQuotation(quote) {
@@ -1227,8 +1240,10 @@ function buildQuotationDocumentHtml(lead) {
         <p>We hope the above proposal is in line with your requirements. If you require any further information, please feel free to contact us.</p>
         <div class="closing-grid">
           <div>
-            <strong>Bank Details</strong>
-            <p>${escapeHtml(quote.bankDetails)}</p>
+            <strong>Banking Details</strong>
+            <p><strong>Name:</strong> ${escapeHtml(COMPANY_BANKING_DETAILS.name)}</p>
+            <p><strong>Account number:</strong> ${escapeHtml(COMPANY_BANKING_DETAILS.accountNumber)}</p>
+            <p><strong>IFSC Code:</strong> ${escapeHtml(COMPANY_BANKING_DETAILS.ifscCode)}</p>
           </div>
           <div>
             <strong>Yours Faithfully</strong>
