@@ -30,12 +30,14 @@ test("PDF options use A4, explicit download filename, and controlled page breaks
   assert.equal(options.jsPDF.format, "a4");
   assert.equal(options.jsPDF.orientation, "portrait");
   assert.equal(options.html2canvas.scale, 2);
+  assert.equal(options.html2canvas.width, 793);
+  assert.equal(options.html2canvas.windowWidth, 793);
   assert.ok(options.pagebreak.avoid.includes("tr"));
 });
 
 test("download pipeline renders the quotation and calls html2pdf save", async () => {
   const calls = [];
-  const quotationElement = { className: "quotation-document" };
+  const quotationElement = { className: "quotation-document", style: {} };
   let hostRemoved = false;
   let coverRemoved = false;
   let stylesRemoved = false;
@@ -79,7 +81,11 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   const appendedBodyElements = [];
   const documentRef = {
     body: {
+      firstChild: null,
       appendChild(element) {
+        appendedBodyElements.push(element);
+      },
+      insertBefore(element) {
         appendedBodyElements.push(element);
       },
     },
@@ -126,8 +132,10 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   assert.equal(calls.find(([name]) => name === "from")[1], stage);
   assert.equal(stage.innerHTML, '<article class="quotation-document">Quote</article>');
   assert.deepEqual(appendedBodyElements, [host, cover]);
-  assert.equal(host.style.left, "0");
-  assert.notEqual(host.style.zIndex, "-1");
+  assert.equal(host.style.position, undefined);
+  assert.equal(host.style.width, "793px");
+  assert.equal(stage.style.minWidth, "793px");
+  assert.equal(quotationElement.style.width, "793px");
   assert.equal(coverRemoved, true);
   assert.equal(hostRemoved, true);
   assert.equal(stylesRemoved, true);

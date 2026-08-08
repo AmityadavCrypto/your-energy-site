@@ -9,7 +9,8 @@
     root.QuotationPdfDownload = api;
   }
 })(typeof window !== "undefined" ? window : globalThis, function createQuotationPdfDownload() {
-  const A4_WIDTH_PX = 794;
+  // html2pdf converts A4's 210 mm width to 793 CSS pixels at 96 DPI.
+  const A4_WIDTH_PX = 793;
 
   function sanitizeFilenamePart(value, fallback = "Customer") {
     const normalized = String(value || "")
@@ -45,6 +46,7 @@
         scrollX: 0,
         scrollY: 0,
         useCORS: true,
+        width: A4_WIDTH_PX,
         windowWidth: A4_WIDTH_PX,
       },
       jsPDF: {
@@ -71,20 +73,20 @@
     host.setAttribute("aria-hidden", "true");
     Object.assign(host.style, {
       background: "#ffffff",
-      left: "0",
+      margin: "0",
       pointerEvents: "none",
-      position: "fixed",
-      top: "0",
       width: `${A4_WIDTH_PX}px`,
-      zIndex: "2147483646",
     });
 
     const stage = documentRef.createElement("div");
     stage.className = "quotation-pdf-stage";
+    stage.style.margin = "0";
+    stage.style.maxWidth = `${A4_WIDTH_PX}px`;
+    stage.style.minWidth = `${A4_WIDTH_PX}px`;
     stage.style.width = `${A4_WIDTH_PX}px`;
     stage.innerHTML = html;
     host.appendChild(stage);
-    documentRef.body.appendChild(host);
+    documentRef.body.insertBefore(host, documentRef.body.firstChild || null);
 
     // Keep the render source inside the viewport so html2canvas can capture it.
     // A separate cover prevents the temporary quotation from flashing onscreen.
@@ -150,6 +152,14 @@
       if (!quotation) {
         throw new Error("The quotation could not be prepared for download.");
       }
+
+      // Override millimetre/max-width rules so the capture cannot reflow or crop.
+      Object.assign(quotation.style, {
+        margin: "0",
+        maxWidth: `${A4_WIDTH_PX}px`,
+        minWidth: `${A4_WIDTH_PX}px`,
+        width: `${A4_WIDTH_PX}px`,
+      });
 
       await html2pdfFactory().set(getPdfOptions(filename)).from(stage).save();
       return filename;
