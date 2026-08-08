@@ -42,6 +42,8 @@
         backgroundColor: "#ffffff",
         logging: false,
         scale: 2,
+        scrollX: 0,
+        scrollY: 0,
         useCORS: true,
         windowWidth: A4_WIDTH_PX,
       },
@@ -68,11 +70,13 @@
     const host = documentRef.createElement("div");
     host.setAttribute("aria-hidden", "true");
     Object.assign(host.style, {
-      left: `-${A4_WIDTH_PX * 2}px`,
+      background: "#ffffff",
+      left: "0",
       pointerEvents: "none",
       position: "fixed",
       top: "0",
-      zIndex: "-1",
+      width: `${A4_WIDTH_PX}px`,
+      zIndex: "2147483646",
     });
 
     const stage = documentRef.createElement("div");
@@ -82,7 +86,28 @@
     host.appendChild(stage);
     documentRef.body.appendChild(host);
 
-    return { host, stage, styleElement };
+    // Keep the render source inside the viewport so html2canvas can capture it.
+    // A separate cover prevents the temporary quotation from flashing onscreen.
+    const cover = documentRef.createElement("div");
+    cover.setAttribute("aria-live", "polite");
+    cover.setAttribute("role", "status");
+    cover.textContent = "Preparing your PDF download...";
+    Object.assign(cover.style, {
+      alignItems: "center",
+      background: "#f4f8ee",
+      color: "#08203f",
+      display: "flex",
+      fontFamily: "sans-serif",
+      fontSize: "16px",
+      fontWeight: "700",
+      inset: "0",
+      justifyContent: "center",
+      position: "fixed",
+      zIndex: "2147483647",
+    });
+    documentRef.body.appendChild(cover);
+
+    return { cover, host, stage, styleElement };
   }
 
   function waitForImage(image) {
@@ -117,7 +142,7 @@
       throw new Error("The PDF generator did not load. Refresh the page and try again.");
     }
 
-    const { host, stage, styleElement } = createRenderStage(documentRef, html, styles);
+    const { cover, host, stage, styleElement } = createRenderStage(documentRef, html, styles);
 
     try {
       await waitForDocument(documentRef, stage);
@@ -129,6 +154,7 @@
       await html2pdfFactory().set(getPdfOptions(filename)).from(stage).save();
       return filename;
     } finally {
+      cover.remove();
       host.remove();
       styleElement.remove();
     }

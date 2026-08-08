@@ -37,6 +37,7 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   const calls = [];
   const quotationElement = { className: "quotation-document" };
   let hostRemoved = false;
+  let coverRemoved = false;
   let stylesRemoved = false;
   const styleElement = {
     dataset: {},
@@ -66,11 +67,20 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
     setAttribute() {},
     style: {},
   };
-  const elements = [styleElement, host, stage];
+  const cover = {
+    remove() {
+      coverRemoved = true;
+    },
+    setAttribute() {},
+    style: {},
+    textContent: "",
+  };
+  const elements = [styleElement, host, stage, cover];
+  const appendedBodyElements = [];
   const documentRef = {
     body: {
       appendChild(element) {
-        assert.equal(element, host);
+        appendedBodyElements.push(element);
       },
     },
     defaultView: {
@@ -115,6 +125,10 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   assert.equal(calls.some(([name]) => name === "save"), true);
   assert.equal(calls.find(([name]) => name === "from")[1], stage);
   assert.equal(stage.innerHTML, '<article class="quotation-document">Quote</article>');
+  assert.deepEqual(appendedBodyElements, [host, cover]);
+  assert.equal(host.style.left, "0");
+  assert.notEqual(host.style.zIndex, "-1");
+  assert.equal(coverRemoved, true);
   assert.equal(hostRemoved, true);
   assert.equal(stylesRemoved, true);
 });
