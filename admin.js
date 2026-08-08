@@ -927,6 +927,7 @@ function getQuotationDefaults(lead) {
     preparedBy: "Tarun Jangir",
     solarPanelBrand: "Waaree",
     inverterBrand: "Growatt",
+    batteryBrand: "",
     systemType: "On-Grid",
     panelTechnology: "Mono PERC",
     systemSize: estimateSize,
@@ -1029,6 +1030,7 @@ function renderQuotationPreview(lead) {
     <div class="quote-preview-grid">
       <span>Panel Brand</span><strong>${escapeHtml(quote.solarPanelBrand)}</strong>
       <span>Inverter Brand</span><strong>${escapeHtml(quote.inverterBrand)}</strong>
+      <span>Battery Brand</span><strong>${escapeHtml(quote.batteryBrand || "Not included")}</strong>
       <span>System Size</span><strong>${escapeHtml(quote.systemSize || "-")} kW</strong>
       <span>System Type</span><strong>${escapeHtml(quote.systemType)}</strong>
       <span>GST</span><strong>${formatCurrency(totals.gst)}</strong>
@@ -1081,6 +1083,113 @@ function buildDataRows(rows) {
   return rows.map((row) => `<tr>${row.map((value) => `<td>${escapeHtml(value || "-")}</td>`).join("")}</tr>`).join("");
 }
 
+function buildQuotationBomRows(quote, { panelCapacity, panelQuantity, inverterCapacity }) {
+  const items = [
+    ["Solar Module", quote.solarPanelBrand || "-", panelCapacity, panelQuantity],
+    ["Inverter", quote.inverterBrand || "-", `${inverterCapacity}, ${quote.systemType || "-"}`, "1 Pc."],
+    ...(String(quote.batteryBrand || "").trim()
+      ? [["Battery", String(quote.batteryBrand).trim(), "As specified", "As required"]]
+      : []),
+    ["Energy Meter", quote.energyMeter || "HPL / Secure or equivalent", "As per DISCOM requirement", "As required"],
+    ["DC Cable", quote.dcCable || "Polycab / equivalent", "1C x 4 sq. mm", "As required"],
+    ["AC Cable", quote.acCable || "Standard copper cable", "As per load requirement", "As required"],
+    ["Earthing Set with Lightning Arrester", quote.earthingSet || "Standard", "Set", "As required"],
+    ["Earthing Wire", quote.earthingWire || "Standard 4 mm", "Set", "As required"],
+    ["DCDB & ACDB", quote.dcdbAcdb || "Standard", "Set", "As required"],
+    ["Balance of System", quote.balanceOfSystem || "MC4 connectors, lugs, nut bolts and other items", "Set", "As required"],
+    ["Installation & Commissioning", quote.installationScope || "FlyingApes Technologies Private Limited", "Set", "As required"],
+    ["Mounting Structure", quote.structureType || "Standard", "Set", "As required"],
+  ];
+
+  return items.map((row, index) => [String(index + 1), ...row]);
+}
+
+function buildQuotationPdfModel(lead, assets = {}) {
+  const { quote, totals } = getQuotationWithTotals(lead);
+  const systemSize = quote.systemSize || Number.parseFloat(String(lead.estimatedSystem || "").replace(/[^\d.]/g, "")) || "-";
+  const projectType = `${systemSize} kW ${quote.systemType || "Solar"} Rooftop Solar Power Plant`;
+  const panelCapacity = quote.panelWattage ? `${quote.panelWattage}+ W` : "-";
+  const panelQuantity = quote.panelQuantity ? `${quote.panelQuantity} Nos.` : "-";
+  const inverterCapacity = quote.inverterCapacity ? `${quote.inverterCapacity} kW` : "-";
+
+  return {
+    assets: {
+      fullLogoSrc: assets.fullLogoSrc || getAssetUrl("assets/logo-your-energy-web.png"),
+    },
+    company: {
+      kicker: "Powered by FlyingApes Technologies Private Limited",
+      legalName: "FLYINGAPES TECHNOLOGIES PRIVATE LIMITED",
+      registeredOffice: "SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana",
+      branchOne: "White House, Shakti Vihar, Kotputli - 303108, Rajasthan",
+      branchTwo: "Sanwali Circle, Sikar - 332021",
+      gstin: "08AAGCF5791A1ZN",
+      website: "www.yourenergy.co.in",
+      phone: "+91 92618 69245",
+    },
+    quotation: {
+      total: formatCurrency(totals.total),
+      date: formatQuotationDate(quote.quotationDate),
+      preparedBy: quote.preparedBy || "Authorized Signatory",
+    },
+    summary: {
+      customer: lead.projectName || lead.name || "-",
+      system: projectType,
+      location: lead.city || "-",
+    },
+    customerRows: [
+      ["Customer Name", lead.name || "-"],
+      ...(lead.projectName ? [["Business / Society", lead.projectName]] : []),
+      ["Phone Number", lead.phone || "-"],
+      ["Project Location", lead.city || "-"],
+      ["Project Type", projectType],
+      ["Monthly Electricity Bill", lead.monthlyBill || "-"],
+      ["Property Type", lead.propertyType || "-"],
+    ],
+    introduction:
+      "Dear Sir, with reference to our discussion, we are pleased to submit our professional proposal for the above rooftop solar power plant.",
+    bomRows: buildQuotationBomRows(quote, { panelCapacity, panelQuantity, inverterCapacity }),
+    spaceRequirement:
+      "The customer shall provide shadow-free roof space suitable for solar module installation and safe access for installation activity.",
+    commercialRows: [
+      ["1", "GST Type", totals.gstMode || quote.gstMode || "Exclusive of GST"],
+      ["2", "Subsidy", formatCurrency(totals.discount)],
+      ["3", "Final Quotation", formatCurrency(totals.total)],
+      ["4", "DISCOM / Net Metering Charges", "Government / DISCOM charges are extra unless specifically included in writing."],
+    ],
+    subsidyNote: "Subsidy is shown separately for reference and is not deducted from the final quotation amount.",
+    paymentRows: [
+      ["1", "Payment Terms", quote.paymentTerms || "-"],
+      ["2", "Advance Required", formatCurrency(totals.advance)],
+      ["3", "Balance Payment", formatCurrency(totals.balance)],
+      ["4", "Project Completion", quote.completionTimeline || "-"],
+      ["5", "Validity of Offer", `${quote.validityDays || "-"} days from quotation date`],
+      ["6", "Transportation", "Transportation of the above-mentioned material up to the installation site is included."],
+    ],
+    bankingRows: [
+      ["Name", COMPANY_BANKING_DETAILS.name],
+      ["Account number", COMPANY_BANKING_DETAILS.accountNumber],
+      ["IFSC Code", COMPANY_BANKING_DETAILS.ifscCode],
+    ],
+    scopeItems: [
+      "Cleaning of solar modules shall be in the client's scope.",
+      "Roof access, electricity and water shall be provided by the client during construction.",
+      "Safe storage space for solar material shall be provided by the client.",
+      "Electrical connection space in the LT panel shall be provided for inverter output synchronization.",
+      "Internet connection shall be provided by the client for remote monitoring, if applicable.",
+    ],
+    warrantyRows: [
+      ["1", "Complete System Warranty", quote.systemWarranty || "-"],
+      ["2", "Solar Module Warranty", quote.moduleWarranty || "-"],
+      ["3", "Inverter Warranty", quote.inverterWarranty || "-"],
+      ["4", "Net Metering", "Government / DISCOM fees, file charges, demand, stamp, testing and net metering charges are payable as applicable."],
+      ["5", "Force Majeure", "Work timelines may change due to war, fire, flood, epidemic, government action, law, act of God, DISCOM delay, or other events outside reasonable control."],
+    ],
+    closingText:
+      "We hope the above proposal is in line with your requirements. If you require any further information, please feel free to contact us.",
+    remarks: quote.remarks || "Final quotation is subject to site verification and approval requirements.",
+  };
+}
+
 function getAssetUrl(path) {
   return new URL(path, window.location.href).href;
 }
@@ -1106,19 +1215,7 @@ function buildQuotationDocumentHtml(lead) {
     ["Property Type", lead.propertyType || "-"],
   ];
 
-  const bomRows = [
-    ["1", "Solar Module", quote.solarPanelBrand || "-", panelCapacity, panelQuantity],
-    ["2", "Hybrid Inverter", quote.inverterBrand || "-", `${inverterCapacity}, ${quote.systemType || "-"}`, "1 Pc."],
-    ["3", "Energy Meter", quote.energyMeter || "HPL / Secure or equivalent", "As per DISCOM requirement", "As required"],
-    ["4", "DC Cable", quote.dcCable || "Polycab / equivalent", "1C x 4 sq. mm", "As required"],
-    ["5", "AC Cable", quote.acCable || "Standard copper cable", "As per load requirement", "As required"],
-    ["6", "Earthing Set with Lightning Arrester", quote.earthingSet || "Standard", "Set", "As required"],
-    ["7", "Earthing Wire", quote.earthingWire || "Standard 4 mm", "Set", "As required"],
-    ["8", "DCDB & ACDB", quote.dcdbAcdb || "Standard", "Set", "As required"],
-    ["9", "Balance of System", quote.balanceOfSystem || "MC4 connectors, lugs, nut bolts and other items", "Set", "As required"],
-    ["10", "Installation & Commissioning", quote.installationScope || "FLYINGAPES TECHNOLOGIES PRIVATE LIMITED", "Set", "As required"],
-    ["11", "Mounting Structure", quote.structureType || "Standard", "Set", "As required"],
-  ];
+  const bomRows = buildQuotationBomRows(quote, { panelCapacity, panelQuantity, inverterCapacity });
 
   const commercialRows = [
     ["1", "Project Cost", formatCurrency(totals.subtotal)],
@@ -1164,6 +1261,7 @@ function buildQuotationDocumentHtml(lead) {
             <p>Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana</p>
             <p>Branch 1: White House, Shakti Vihar, Kotputli - 303108, Rajasthan</p>
             <p>Branch 2: Sanwali Circle, Sikar - 332021</p>
+            <p>GSTIN: 08AAGCF5791A1ZN</p>
             <p>Phone: +91 92618 69245</p>
           </div>
         </div>
@@ -1507,14 +1605,11 @@ async function downloadQuotationFile(lead, assets = {}) {
     throw new Error("The PDF generator did not load. Refresh the page and try again.");
   }
 
-  const customerName = lead.projectName || lead.name || "Customer";
-  return pdfDownload.downloadHtml({
+  return pdfDownload.downloadPdf({
     documentRef: document,
     filename: pdfDownload.buildFilename(lead),
-    html: buildQuotationDocumentHtml(lead, assets),
-    html2pdfFactory: window.html2pdf,
-    styles: buildQuotationPrintStyles(),
-    title: `Solar Quotation - ${customerName}`,
+    model: buildQuotationPdfModel(lead, assets),
+    pdfLib: window.PDFLib,
   });
 }
 
@@ -1562,7 +1657,7 @@ async function sendQuotationOnWhatsapp() {
 
   const total = formatCurrency(lead.quotation.total);
   const message = encodeURIComponent(
-    `Hello ${lead.name || ""},\n\nYour solar quotation from FLYINGAPES TECHNOLOGIES PRIVATE LIMITED is ready.\n\nSystem: ${lead.quotation.systemSize || "-"} kW ${lead.quotation.systemType || ""}\nPanel: ${lead.quotation.solarPanelBrand || "-"}\nInverter: ${lead.quotation.inverterBrand || "-"}\nFinal Quotation: ${total}\n\nWe will share the PDF quotation with you for review.`,
+    `Hello ${lead.name || ""},\n\nYour solar quotation from FLYINGAPES TECHNOLOGIES PRIVATE LIMITED is ready.\n\nSystem: ${lead.quotation.systemSize || "-"} kW ${lead.quotation.systemType || ""}\nPanel: ${lead.quotation.solarPanelBrand || "-"}\nInverter: ${lead.quotation.inverterBrand || "-"}${lead.quotation.batteryBrand ? `\nBattery: ${lead.quotation.batteryBrand}` : ""}\nFinal Quotation: ${total}\n\nWe will share the PDF quotation with you for review.`,
   );
 
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank", "noopener,noreferrer");

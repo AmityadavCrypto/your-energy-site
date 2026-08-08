@@ -10,14 +10,14 @@
   <link rel="icon" href="/assets/favicon-96.png?v=20260803-exact-logo" sizes="96x96" type="image/png">
   <link rel="stylesheet" href="styles.css?v=20260804-lead-management">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
   <script src="supabase-config.js?v=20260728-quotation-pdf"></script>
   <script src="quotation-brand-assets.js?v=20260728-quotation-pdf-v6"></script>
-  <script src="quotation-pdf-download.js?v=20260808-a4-width-lock" defer></script>
+  <script src="quotation-pdf-download.js?v=20260808-vector-pdf" defer></script>
   <script src="admin-lead-utils.js?v=20260804-lead-management" defer></script>
   <script src="admin-lead-repository.js?v=20260804-lead-management" defer></script>
-  <script src="admin.js?v=20260808-banking-details" defer></script>
-  <script src="admin-gst-mode.js?v=20260808-banking-details" defer></script>
+  <script src="admin.js?v=20260808-custom-brands" defer></script>
+  <script src="admin-gst-mode.js?v=20260808-custom-brands" defer></script>
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -256,28 +256,15 @@
               <div class="form-section-title field-wide">System Details</div>
               <label class="field">
                 <span>Solar Panel Brand</span>
-                <select name="solarPanelBrand">
-                  <option>Waaree</option>
-                  <option>Adani Solar</option>
-                  <option>Vikram Solar</option>
-                  <option>Tata Power Solar</option>
-                  <option>RenewSys</option>
-                  <option>UTL Solar</option>
-                  <option>UTL Solar / Adani / Waaree / Genus / Luminous</option>
-                  <option>Other</option>
-                </select>
+                <input type="text" name="solarPanelBrand" placeholder="Enter solar panel brand" autocomplete="off">
               </label>
               <label class="field">
                 <span>Inverter Brand</span>
-                <select name="inverterBrand">
-                  <option>Growatt</option>
-                  <option>Solis</option>
-                  <option>Sungrow</option>
-                  <option>GoodWe</option>
-                  <option>Luminous</option>
-                  <option>UTL Solar</option>
-                  <option>Other</option>
-                </select>
+                <input type="text" name="inverterBrand" placeholder="Enter inverter brand" autocomplete="off">
+              </label>
+              <label class="field">
+                <span>Battery Brand <small>(Optional)</small></span>
+                <input type="text" name="batteryBrand" placeholder="Enter battery brand" autocomplete="off">
               </label>
               <label class="field">
                 <span>System Type</span>

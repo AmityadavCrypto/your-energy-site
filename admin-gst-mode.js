@@ -124,6 +124,7 @@ renderQuotationPreview = function renderQuotationPreviewWithGstMode(lead) {
     <div class="quote-preview-grid">
       <span>Panel Brand</span><strong>${escapeHtml(quote.solarPanelBrand)}</strong>
       <span>Inverter Brand</span><strong>${escapeHtml(quote.inverterBrand)}</strong>
+      <span>Battery Brand</span><strong>${escapeHtml(quote.batteryBrand || "Not included")}</strong>
       <span>System Size</span><strong>${escapeHtml(quote.systemSize || "-")} kW</strong>
       <span>System Type</span><strong>${escapeHtml(quote.systemType)}</strong>
       <span>GST Mode</span><strong>${escapeHtml(totals.gstMode)}</strong>
@@ -152,19 +153,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
     ["Property Type", lead.propertyType || "-"],
   ];
 
-  const bomRows = [
-    ["1", "Solar Module", quote.solarPanelBrand || "-", panelCapacity, panelQuantity],
-    ["2", "Inverter", quote.inverterBrand || "-", `${inverterCapacity}, ${quote.systemType || "-"}`, "1 Pc."],
-    ["3", "Energy Meter", quote.energyMeter || "HPL / Secure or equivalent", "As per DISCOM requirement", "As required"],
-    ["4", "DC Cable", quote.dcCable || "Polycab / equivalent", "1C x 4 sq. mm", "As required"],
-    ["5", "AC Cable", quote.acCable || "Standard copper cable", "As per load requirement", "As required"],
-    ["6", "Earthing Set with Lightning Arrester", quote.earthingSet || "Standard", "Set", "As required"],
-    ["7", "Earthing Wire", quote.earthingWire || "Standard 4 mm", "Set", "As required"],
-    ["8", "DCDB & ACDB", quote.dcdbAcdb || "Standard", "Set", "As required"],
-    ["9", "Balance of System", quote.balanceOfSystem || "MC4 connectors, lugs, nut bolts and other items", "Set", "As required"],
-    ["10", "Installation & Commissioning", quote.installationScope || "FLYINGAPES TECHNOLOGIES PRIVATE LIMITED", "Set", "As required"],
-    ["11", "Mounting Structure", quote.structureType || "Standard", "Set", "As required"],
-  ];
+  const bomRows = buildQuotationBomRows(quote, { panelCapacity, panelQuantity, inverterCapacity });
 
   const commercialRows = [
     ["1", "GST Type", totals.gstMode],
@@ -215,6 +204,7 @@ buildQuotationDocumentHtml = function buildQuotationDocumentHtmlWithGstMode(lead
             <p>Registered Office: SGT Chandu Budhera Rd, Near by Labour Chowk, Garhi Harsaru, Gurgaon - 122505, Haryana</p>
             <p>Branch 1: White House, Shakti Vihar, Kotputli - 303108, Rajasthan</p>
             <p>Branch 2: Sanwali Circle, Sikar - 332021</p>
+            <p>GSTIN: 08AAGCF5791A1ZN</p>
             <p>Website: <a class="quotation-website-link" href="https://yourenergy.co.in/" target="_blank" rel="noopener noreferrer">www.yourenergy.co.in</a></p>
             <p>Phone: +91 92618 69245</p>
           </div>

@@ -6,3 +6,5 @@ document-work/
 !supabase-config.example.js
 company-snapshot.*/
 full-snapshot.*/
+output/
+tmp/
