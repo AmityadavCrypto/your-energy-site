@@ -64,6 +64,20 @@
   }
 
   function createRenderStage(documentRef, html, styles) {
+    const layoutTargets = [documentRef.documentElement, documentRef.body].filter(Boolean);
+    const previousLayout = layoutTargets.map((element) => ({
+      element,
+      minWidth: element.style.minWidth,
+      overflow: element.style.overflow,
+      overflowX: element.style.overflowX,
+    }));
+
+    layoutTargets.forEach((element) => {
+      element.style.minWidth = `${A4_WIDTH_PX}px`;
+      element.style.overflow = "visible";
+      element.style.overflowX = "visible";
+    });
+
     const styleElement = documentRef.createElement("style");
     styleElement.dataset.quotationPdfStyles = "true";
     styleElement.textContent = styles;
@@ -109,7 +123,15 @@
     });
     documentRef.body.appendChild(cover);
 
-    return { cover, host, stage, styleElement };
+    const restoreLayout = () => {
+      previousLayout.forEach(({ element, minWidth, overflow, overflowX }) => {
+        element.style.minWidth = minWidth;
+        element.style.overflow = overflow;
+        element.style.overflowX = overflowX;
+      });
+    };
+
+    return { cover, host, restoreLayout, stage, styleElement };
   }
 
   function waitForImage(image) {
@@ -144,7 +166,7 @@
       throw new Error("The PDF generator did not load. Refresh the page and try again.");
     }
 
-    const { cover, host, stage, styleElement } = createRenderStage(documentRef, html, styles);
+    const { cover, host, restoreLayout, stage, styleElement } = createRenderStage(documentRef, html, styles);
 
     try {
       await waitForDocument(documentRef, stage);
@@ -167,6 +189,7 @@
       cover.remove();
       host.remove();
       styleElement.remove();
+      restoreLayout();
     }
   }
 

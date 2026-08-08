@@ -82,6 +82,7 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   const documentRef = {
     body: {
       firstChild: null,
+      style: { minWidth: "", overflow: "", overflowX: "hidden" },
       appendChild(element) {
         appendedBodyElements.push(element);
       },
@@ -95,6 +96,9 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
       },
     },
     fonts: null,
+    documentElement: {
+      style: { minWidth: "", overflow: "", overflowX: "clip" },
+    },
     head: {
       appendChild(element) {
         assert.equal(element, styleElement);
@@ -136,6 +140,9 @@ test("download pipeline renders the quotation and calls html2pdf save", async ()
   assert.equal(host.style.width, "793px");
   assert.equal(stage.style.minWidth, "793px");
   assert.equal(quotationElement.style.width, "793px");
+  assert.equal(documentRef.body.style.minWidth, "");
+  assert.equal(documentRef.body.style.overflowX, "hidden");
+  assert.equal(documentRef.documentElement.style.overflowX, "clip");
   assert.equal(coverRemoved, true);
   assert.equal(hostRemoved, true);
   assert.equal(stylesRemoved, true);
